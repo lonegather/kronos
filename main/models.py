@@ -58,6 +58,7 @@ class Entity(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Project, default=uuid.uuid4, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, default=uuid.uuid4, on_delete=models.CASCADE)
+    link = models.CharField(max_length=200, blank=True)
     name = models.CharField(max_length=100)
     info = models.CharField(max_length=200, blank=True)
     url = models.CharField(max_length=200, default='/')
