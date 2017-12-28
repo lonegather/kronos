@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 
 import uuid
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
 # Create your models here.
+@python_2_unicode_compatible
 class Project(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -17,7 +19,8 @@ class Project(models.Model):
     def __str__(self):
         return self.name
     
-    
+
+@python_2_unicode_compatible
 class Edition(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -29,6 +32,7 @@ class Edition(models.Model):
         return self.name
     
 
+@python_2_unicode_compatible
 class Genus(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -39,7 +43,8 @@ class Genus(models.Model):
     def __str__(self):
         return self.name
     
-    
+
+@python_2_unicode_compatible
 class Tag(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -53,6 +58,7 @@ class Tag(models.Model):
         return self.name if self.project.name == '|' else '%s | %s' % (self.project, self.name)
 
 
+@python_2_unicode_compatible
 class Entity(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -66,6 +72,27 @@ class Entity(models.Model):
     def genus(self):
         return self.tag.genus
     
+    def save(self, *args, **kwargs):
+        if self.genus().name == 'batch':
+            tags = Tag.objects.filter(name=self.name, project=self.project)
+            if len(tags): return
+            
+            genus = Genus.objects.get(name='shot')
+            data = {'name':        self.name,
+                    'project':     self.project,
+                    'genus':       genus,
+                    'info':        self.name,
+                    'url': '/%s' % self.name}
+            Tag(**data).save()
+            
+        models.Model.save(self, *args, **kwargs)
+        
+    def delete(self, using=None, keep_parents=False):
+        if self.genus().name == 'batch':
+            Tag.objects.get(project=self.project, name=self.name).delete()
+        
+        return models.Model.delete(self, using=using, keep_parents=keep_parents)
+    
     def __str__(self):
         name = str(self.name)
         project = str(self.project)
@@ -73,6 +100,7 @@ class Entity(models.Model):
         return '{name} [ {project} | {tag} ]'.format(**locals())
 
 
+@python_2_unicode_compatible
 class Stage(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -86,7 +114,8 @@ class Stage(models.Model):
     def __str__(self):
         return self.name
     
-    
+
+@python_2_unicode_compatible
 class Status(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -97,7 +126,8 @@ class Status(models.Model):
     def __str__(self):
         return self.name
     
-    
+
+@python_2_unicode_compatible
 class Task(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
