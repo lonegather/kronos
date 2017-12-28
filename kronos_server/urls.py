@@ -18,6 +18,7 @@ from django.contrib import admin
 from main import views
 
 urlpatterns = [
+    url(r'^socket/', views.ws, name='ws'),
     url(r'^api/', views.api, name='api'),
     url(r'^repo/', views.repo, name='repo'),
     url(r'^admin/', admin.site.urls),

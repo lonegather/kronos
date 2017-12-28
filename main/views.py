@@ -16,6 +16,14 @@ def api(request):
     return HttpResponse(str(get_projects()))
 
 
+def ws(request):
+    import uwsgi
+    uwsgi.websocket_handshake()
+    while True:
+        msg = uwsgi.websocket_recv()
+        uwsgi.websocket_send(msg)
+
+
 def get_projects():
     result = []
     for prj in models.Project.objects.all():

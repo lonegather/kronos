@@ -4,9 +4,6 @@
 def reset_data():
     from . import models
     
-    try: print(uwsgi)
-    except: pass
-    
     tables = [models.Project, models.Edition, models.Genus, models.Tag, 
               models.Entity, models.Stage, models.Status, models.Task]
     
