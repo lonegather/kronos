@@ -1,0 +1,6 @@
+/main/migrations/
+/conf/*.log
+/conf/*.pid
+db.sqlite3
+*.pyc
+
