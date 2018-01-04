@@ -8,8 +8,11 @@ from main import models
 
 # Create your views here.
 def index(request):
-    html = request.path.split('/')[-1] if request.path.split('/')[-1] else 'index.html'
-    return render(request, html)
+    return render(request, 'index.html')
+
+
+def front(request, url):
+    return render(request, '%s.html' % url)
 
 
 def api(request):
