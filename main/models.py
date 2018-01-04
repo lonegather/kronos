@@ -119,11 +119,11 @@ class Entity(models.Model):
                 return
             
             genus = Genus.objects.get(name='shot')
-            data = {'name':        self.name,
-                    'project':     self.project,
-                    'genus':       genus,
-                    'info':        self.name,
-                    'url': '/%s' % self.name}
+            data = {'name':    self.name,
+                    'project': self.project,
+                    'genus':   genus,
+                    'info':    self.name,
+                    'url':     self.name}
             Tag(**data).save()
             
         models.Model.save(self, *args, **kwargs)
