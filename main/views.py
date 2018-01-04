@@ -7,8 +7,9 @@ from main import models
 
 
 # Create your views here.
-def repo(request):
-    return render(request, 'repo.html', {'string': models.Entity.get()})
+def index(request):
+    html = request.path.split('/')[-1] if request.path.split('/')[-1] else 'index.html'
+    return render(request, html)
 
 
 def api(request):
