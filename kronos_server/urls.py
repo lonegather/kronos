@@ -20,6 +20,6 @@ from main import views
 urlpatterns = [
     url(r'^socket/', views.ws, name='ws'),
     url(r'^api/', views.api, name='api'),
-    url(r'^repo/', views.repo, name='repo'),
+    url(r'^$', views.repo, name='index'),
     url(r'^admin/', admin.site.urls),
 ]
