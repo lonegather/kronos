@@ -39,7 +39,7 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(models.Entity)
 class EntityAdmin(admin.ModelAdmin):
     
-    list_display = ('name', 'info', 'tag', 'genus')
+    list_display = ('name', 'info', 'tag', 'genus', 'path')
     list_filter = ('project', 'tag')
     ordering = ('name', )
     search_fields = ('name', )
@@ -48,8 +48,8 @@ class EntityAdmin(admin.ModelAdmin):
 @admin.register(models.Stage)
 class StageAdmin(admin.ModelAdmin):
     
-    list_display = ('name', 'info')
-    list_filter = ('genus', )
+    list_display = ('name', 'info', 'genus', 'path', 'project')
+    list_filter = ('genus', 'project')
     ordering = ('name', )
 
 
