@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 
@@ -18,13 +18,15 @@ Item {
             id: gridView
             anchors.fill: parent
             cellWidth: 138
-            cellHeight: 157
+            cellHeight: 160
+            model: entityModel
             delegate: Item {
                 width: gridView.cellWidth
                 height: gridView.cellHeight
                 Column {
                     spacing: 5
                     anchors.fill: parent
+                    anchors.topMargin: 5
                     Rectangle {
                         width: 128
                         height: 128
@@ -35,10 +37,15 @@ Item {
                     Text {
                         text: display
                         color: "grey"
+                        font.family: qsTr("微软雅黑")
                         anchors.horizontalCenter: parent.horizontalCenter
                         font.bold: true
                     }
                 }
+            }
+            focus: true
+            highlight: Rectangle {
+                color: "black"
             }
         }
 

@@ -14,10 +14,11 @@ if __name__ == "__main__":
 
     app = QGuiApplication(sys.argv)
     prj = project.Project()
-    qmlRegisterType(entity.EntityModel, "kronos.entity", 1, 0, "EntityModel")
+    entityModel = entity.EntityModel()
 
     engine = QQmlApplicationEngine()
     engine.rootContext().setContextProperty("project", prj)
+    engine.rootContext().setContextProperty("entityModel", entityModel)
     engine.load("main.qml")
     engine.quit.connect(app.quit)
 

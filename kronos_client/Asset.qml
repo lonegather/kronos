@@ -1,21 +1,19 @@
-import QtQuick 2.0
-import kronos.entity 1.0
+import QtQuick 2.7
 
 AssetForm {
-    EntityModel {
-        id: entityModel
-    }
-
     Connections {
         target: header
         onProjectChanged: {
+            console.log("projectChanged")
             gridView.model = []
             entityModel.update(["project", header.currentProject, "genus", "asset"])
         }
     }
+
     Connections {
         target: entityModel
         onDataChanged: {
+            console.log("dataChanged")
             gridView.model = entityModel
         }
     }
