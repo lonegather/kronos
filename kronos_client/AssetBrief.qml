@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
 
 Item {
+    property alias view: gridView
     GridView {
         id: gridView
         anchors.fill: parent
@@ -12,11 +13,6 @@ Item {
             id: wrapper
             width: gridView.cellWidth
             height: gridView.cellHeight
-
-            property string name: name
-            property string info: info
-            property string tag: tag
-            property string path: path
 
             Rectangle {
                 id: shader
@@ -36,7 +32,7 @@ Item {
                     color: "darkgray"
                 }
                 Text {
-                    text: info
+                    text: name
                     color: wrapper.GridView.isCurrentItem ? "#b0bec5" : "darkgray"
                     font.family: qsTr("微软雅黑")
                     font.pixelSize: 14

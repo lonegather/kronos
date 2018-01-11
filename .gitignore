@@ -3,4 +3,5 @@
 /conf/*.pid
 db.sqlite3
 *.pyc
+*.qmlc
 

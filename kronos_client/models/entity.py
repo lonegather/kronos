@@ -1,4 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
+import json
 from PyQt5.QtCore import QAbstractListModel, Qt, QModelIndex, pyqtSignal, pyqtSlot, QThread, QByteArray
 from . import request
 
@@ -20,6 +21,10 @@ class EntityModel(QAbstractListModel):
         self.request = RequestThread(filters)
         self.request.acquired.connect(self.on_acquired)
         self.request.start()
+
+    @pyqtSlot(int, str, result=str)
+    def analyze(self, index, field):
+        return json.dumps(self.__entity[index][field])
 
     def on_acquired(self, data):
         self.request = None
