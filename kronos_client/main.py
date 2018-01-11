@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtCore import QCoreApplication, Qt
-from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
+from PyQt5.QtQml import QQmlApplicationEngine
 
 
 if __name__ == "__main__":

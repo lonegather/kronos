@@ -1,4 +1,4 @@
-import QtQuick 2.7
+import QtQuick 2.0
 
 HeaderForm {
     id: headerForm
@@ -29,6 +29,13 @@ HeaderForm {
         }
         onInfoAcquired: {
             projectLbl.text = projectInfo
+            background = "#363636"
+            comboEnabled = true
+        }
+        onFailed: {
+            projectLbl.text = message
+            background = "#cc3333"
+            comboEnabled = false
         }
     }
 }

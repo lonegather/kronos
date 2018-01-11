@@ -1,9 +1,9 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.0
 import QtQuick.Layouts 1.2
 import QtGraphicalEffects 1.0
-import QtQuick.Window 2.0
+import QtQuick.Window 2.2
 
 ApplicationWindow {
     id: root
@@ -81,27 +81,11 @@ ApplicationWindow {
         }
     }
 
-    Rectangle {
-        id: buttom
-        color: "#00000000"
-        width: parent.width - 10
-        height: parent.height - 10
-        anchors.centerIn: parent
-    }
-
     DropShadow {
         color: "#1a1a1a"
-        radius: 6
+        samples: 20
+        radius: 8
         anchors.fill: header
         source: header
-    }
-
-    DropShadow {
-        color: "#1a1a1a"
-        radius: 12
-        horizontalOffset: 5
-        verticalOffset: 5
-        anchors.fill: buttom
-        source: buttom
     }
 }

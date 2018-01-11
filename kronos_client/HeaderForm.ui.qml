@@ -1,6 +1,6 @@
-import QtQuick 2.7
+import QtQuick 2.0
 import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.2
+import QtQuick.Controls 2.0
 
 Rectangle {
     id: item1
@@ -9,6 +9,8 @@ Rectangle {
     property alias projectCB: comboBox
     property alias projectLbl: text1
     property alias closeBtn: closeBtn
+    property alias background: item1.color
+    property alias comboEnabled: comboBox.enabled
 
     RowLayout {
         id: rowLayout
@@ -18,6 +20,7 @@ Rectangle {
         ComboBox {
             id: comboBox
             height: 30
+            enabled: false
             font.family: qsTr("微软雅黑")
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
@@ -26,11 +29,11 @@ Rectangle {
 
         Text {
             id: text1
+            color: "darkgray"
             anchors.margins: 10
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
             font.family: qsTr("微软雅黑")
-            color: "grey"
             Layout.fillHeight: true
             font.weight: Font.Bold
             style: Text.Raised
