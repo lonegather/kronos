@@ -56,10 +56,7 @@ Item {
                     pop.setName(name)
                     pop.setInfo(info)
                     pop.setTag(tag)
-                    var pathDic = JSON.parse(path)
-                    for (var i in pathDic) {
-                        console.log(stage.data(i, 'info') + ": " + pathDic[i])
-                    }
+                    pop.setPath(path)
                     pop.open()
                 }
             }
@@ -82,35 +79,90 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         function setName(str) {
-            name.text = str
+            popName.text = str
         }
 
         function setInfo(str) {
-            info.text = str
+            popInfo.text = str
         }
 
         function setTag(str) {
-            tag.text = str
+            popTag.text = str
+        }
+
+        function setPath(path) {
+            pathModel.clear()
+            var pathDic = JSON.parse(path)
+            for (var i in pathDic) {
+                pathModel.append({
+                                     pathName: stage.data(i, 'info'),
+                                     pathValue: pathDic[i]
+                                 })
+            }
+        }
+
+        ListModel {
+            id: pathModel
         }
 
         Column {
-            Text {
-                id: name
-                color: "darkgray"
-                font.pixelSize: 12
-                font.family: qsTr("微软雅黑")
+            anchors.fill: parent
+            Rectangle {
+                color: "#00000000"
+                width: pop.width
+                height: 30
+                Text {
+                    id: popName
+                    anchors.fill: parent
+                    color: "darkgray"
+                    font.pixelSize: 12
+                    font.family: qsTr("微软雅黑")
+                }
             }
-            Text {
-                id: info
-                color: "darkgray"
-                font.pixelSize: 12
-                font.family: qsTr("微软雅黑")
+            Rectangle {
+                color: "#00000000"
+                width: pop.width
+                height: 30
+                Text {
+                    id: popInfo
+                    anchors.fill: parent
+                    color: "darkgray"
+                    font.pixelSize: 12
+                    font.family: qsTr("微软雅黑")
+                }
             }
-            Text {
-                id: tag
-                color: "darkgray"
-                font.pixelSize: 12
-                font.family: qsTr("微软雅黑")
+            Rectangle {
+                color: "#00000000"
+                width: pop.width
+                height: 30
+                Text {
+                    id: popTag
+                    anchors.fill: parent
+                    color: "darkgray"
+                    font.pixelSize: 12
+                    font.family: qsTr("微软雅黑")
+                }
+            }
+            Rectangle {
+                color: "#00000000"
+                width: pop.width
+                height: pathView.count * 50
+                ListView {
+                    id: pathView
+                    anchors.fill: parent
+                    model: pathModel
+                    delegate: Item {
+                        width: pop.width
+                        height: 50
+                        Text {
+                            anchors.fill: parent
+                            text: pathName + ":" + pathValue
+                            color: "darkgray"
+                            font.pixelSize: 12
+                            font.family: qsTr("微软雅黑")
+                        }
+                    }
+                }
             }
         }
     }
