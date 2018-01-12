@@ -17,7 +17,10 @@ def front(request, url):
 
 def api(request):
     table = request.path.split('/')[-1]
-    query = {'project': models.Project.all, 'entity': models.Entity.get}
+    query = {'project': models.Project.all,
+             'entity': models.Entity.get,
+             'stage': models.Stage.get,
+             }
     flt = {}
     for key in request.GET:
         flt[key] = request.GET[key]

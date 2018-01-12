@@ -90,6 +90,8 @@ class Entity(models.Model):
         for key in kwargs:
             if key in mapper:
                 keywords[mapper[key]] = kwargs[key]
+            else:
+                keywords[key] = kwargs[key]
         for ent in cls.objects.filter(**keywords):
             result.append({'name': ent.name, 'info': ent.info, 'project': ent.project.name,
                            'genus': ent.tag.genus.name, 'genus_info': ent.tag.genus.info,
@@ -143,6 +145,24 @@ class Entity(models.Model):
 
 @python_2_unicode_compatible
 class Stage(models.Model):
+
+    @classmethod
+    def get(cls, **kwargs):
+        result = []
+        keywords = {}
+        mapper = {'project': 'project__name',
+                  'genus': 'genus__name',
+                  }
+        for key in kwargs:
+            if key in mapper:
+                keywords[mapper[key]] = kwargs[key]
+            else:
+                keywords[key] = kwargs[key]
+        for stg in cls.objects.filter(**keywords):
+            result.append({'name': stg.name, 'info': stg.info, 'project': stg.project.name,
+                           'genus': stg.genus.name, 'genus_info': stg.genus.info,
+                           'path': stg.path})
+        return json.dumps(result)
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Project, default=uuid.uuid4, on_delete=models.CASCADE)

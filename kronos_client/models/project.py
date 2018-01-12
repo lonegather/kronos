@@ -30,7 +30,7 @@ class Project(QObject):
         self.project_list = data
 
         if not self.project_list:
-            self.failed.emit(u"与服务器连接失败")
+            self.failed.emit(u"连接失败")
             return
 
         if self.project and self.field:

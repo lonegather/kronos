@@ -42,7 +42,7 @@ class EntityModel(QAbstractListModel):
         elif role == self.InfoRole:
             return self.__entity[index.row()]['info']
         elif role == self.PathRole:
-            return str(self.__entity[index.row()]['path'])
+            return json.dumps(self.__entity[index.row()]['path'])
 
     def roleNames(self):
         role_names = super(EntityModel, self).roleNames()

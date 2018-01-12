@@ -39,6 +39,7 @@ Rectangle {
             style: Text.Raised
             Layout.fillWidth: true
             font.pixelSize: 18
+            text: qsTr("正在连接...")
         }
 
         ToolButton {

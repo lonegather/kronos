@@ -10,7 +10,8 @@ ApplicationWindow {
     visible: true
     width: 1280
     height: 720
-    flags: Qt.FramelessWindowHint | Qt.Window | Qt.WindowSystemMenuHint | Qt.WindowMinimizeButtonHint
+    flags: Qt.FramelessWindowHint | Qt.Window | Qt.WindowSystemMenuHint
+           | Qt.WindowMinimizeButtonHint
     title: qsTr("资产库")
     Material.theme: Material.Dark
     Material.accent: Material.BlueGrey
@@ -45,6 +46,7 @@ ApplicationWindow {
 
         Page {
             Asset {
+                id: asset
             }
         }
 

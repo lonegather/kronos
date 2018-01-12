@@ -5,19 +5,33 @@ HeaderForm {
     height: 50
 
     property string currentProject: projectCB.currentText
+    property bool available: comboEnabled
     signal projectChanged(string str)
 
     Component.onCompleted: {
-        project.get_list()
+        comboEnabled = false
+        stage.get_data()
     }
 
     projectCB.onActivated: {
+        comboEnabled = false
         project.get_info(projectCB.currentText, "info")
         header.projectChanged(projectCB.currentText)
     }
 
     closeBtn.onClicked: {
         root.close()
+    }
+
+    Connections {
+        target: stage
+        onAcquired: {
+            project.get_list()
+        }
+        onFailed: {
+            projectLbl.text = message
+            background = "#cc3333"
+        }
     }
 
     Connections {
@@ -30,12 +44,17 @@ HeaderForm {
         onInfoAcquired: {
             projectLbl.text = projectInfo
             background = "#363636"
-            comboEnabled = true
         }
         onFailed: {
             projectLbl.text = message
             background = "#cc3333"
-            comboEnabled = false
+        }
+    }
+
+    Connections {
+        target: asset
+        onAcquired: {
+            comboEnabled = true
         }
     }
 }
