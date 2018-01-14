@@ -15,13 +15,13 @@ if __name__ == "__main__":
     app = QGuiApplication(sys.argv)
     prj = project.Project()
     stg = stage.Stage()
-    entityModel = entity.EntityModel()
+    ent = entity.EntityModel()
 
     engine = QQmlApplicationEngine()
     engine.rootContext().setContextProperty("project", prj)
     engine.rootContext().setContextProperty("stage", stg)
-    engine.rootContext().setContextProperty("entityModel", entityModel)
-    engine.load("main.qml")
+    engine.rootContext().setContextProperty("entityModel", ent)
+    engine.load("qml/main.qml")
     engine.quit.connect(app.quit)
 
     sys.exit(app.exec_())

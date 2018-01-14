@@ -1,9 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.0
-import QtQuick.Layouts 1.2
 import QtGraphicalEffects 1.0
-import QtQuick.Window 2.2
 
 ApplicationWindow {
     id: root
@@ -60,33 +58,42 @@ ApplicationWindow {
         TabButton {
             id: tabTask
             text: qsTr("任务")
+            font.pointSize: 12
+            font.weight: Font.Bold
             font.family: qsTr("微软雅黑")
             onClicked: {
                 swipeView.currentIndex = 0
+                asset.pop.close()
             }
         }
         TabButton {
             id: tabAsset
             text: qsTr("资产")
+            font.pointSize: 12
+            font.weight: Font.Bold
             font.family: qsTr("微软雅黑")
             onClicked: {
                 swipeView.currentIndex = 1
+                asset.pop.close()
             }
         }
         TabButton {
             id: tabShot
             text: qsTr("镜头")
+            font.pointSize: 12
+            font.weight: Font.Bold
             font.family: qsTr("微软雅黑")
             onClicked: {
                 swipeView.currentIndex = 2
+                asset.pop.close()
             }
         }
     }
 
     DropShadow {
-        color: "#1a1a1a"
+        color: "#55000000"
         samples: 20
-        radius: 8
+        radius: 20
         anchors.fill: header
         source: header
     }

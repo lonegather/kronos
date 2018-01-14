@@ -1,7 +1,12 @@
 /main/migrations/
 /conf/*.log
 /conf/*.pid
+/kronos_client/build/
+/kronos_client/dist/
 db.sqlite3
+*.pro
+*.pro.user
+*.spec
 *.pyc
 *.qmlc
 
