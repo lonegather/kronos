@@ -41,3 +41,4 @@ def api(request):
 
 def ws(request):
     sockets.Client.create()
+    return HttpResponse("connected")
