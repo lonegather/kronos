@@ -40,4 +40,5 @@ def api(request):
 
 
 def ws(request):
-    sockets.Client()
+    client = sockets.Client()
+    client.start()
