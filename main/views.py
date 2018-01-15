@@ -45,8 +45,9 @@ def ws(request):
 
     uwsgi.websocket_handshake()
     while True:
-        msg = uwsgi.websocket_recv()
-        print("Message from client: %s" % msg)
-        if msg == "close":
+        try:
+            msg = uwsgi.websocket_recv()
+        except OSError:
             break
+        print("Message from client: %s" % msg)
         uwsgi.websocket_send("[%s] %s" % (time.time(), msg))
