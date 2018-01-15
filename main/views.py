@@ -40,5 +40,13 @@ def api(request):
 
 
 def ws(request):
-    sockets.Client.create()
-    return HttpResponse("connected")
+    import uwsgi
+    import time
+
+    uwsgi.websocket_handshake()
+    while True:
+        msg = uwsgi.websocket_recv()
+        print("Message from client: %s" % msg)
+        if msg == "close":
+            break
+        uwsgi.websocket_send("[%s] %s" % (time.time(), msg))
