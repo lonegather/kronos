@@ -16,6 +16,7 @@ Item {
         anchors.fill: parent
         cellWidth: 158
         cellHeight: 183
+        flickableDirection: Flickable.AutoFlickIfNeeded
         delegate: Item {
             id: wrapper
             width: gridView.cellWidth
@@ -53,7 +54,6 @@ Item {
                         spacing: 6
                     }
                 }
-
             ]
             transitions: [
                 Transition {
@@ -236,6 +236,7 @@ Item {
                 clip: true
                 spacing: 12
                 model: pathModel
+                flickableDirection: Flickable.AutoFlickIfNeeded
                 delegate: Item {
                     width: parent.width
                     height: 100

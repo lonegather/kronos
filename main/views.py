@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from main import models
+from django.contrib.auth import authenticate, login, logout
+from main import models, sockets
 
 
 # Create your views here.
@@ -13,6 +14,17 @@ def index(request):
 
 def front(request, url):
     return render(request, '%s.html' % url)
+
+
+def auth(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return HttpResponse("success")
+    else:
+        pass
 
 
 def api(request):
@@ -28,8 +40,4 @@ def api(request):
 
 
 def ws(request):
-    import uwsgi
-    uwsgi.websocket_handshake()
-    while True:
-        msg = uwsgi.websocket_recv()
-        uwsgi.websocket_send(msg)
+    sockets.Client()

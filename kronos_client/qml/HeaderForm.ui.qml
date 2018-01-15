@@ -53,7 +53,10 @@ Rectangle {
 
         ToolButton {
             id: closeBtn
-            focusPolicy: Qt.NoFocus
+            Image {
+                anchors.fill: parent
+                source: "exit.png"
+            }
         }
     }
 }
