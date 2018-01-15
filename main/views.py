@@ -51,4 +51,5 @@ def ws(request):
             break
         print("Message from client: %s" % msg)
         uwsgi.websocket_send("[%s] %s" % (time.time(), msg))
-        return HttpResponse(b'')
+    
+    return HttpResponse(b'')
