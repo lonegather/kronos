@@ -18,7 +18,6 @@ from django.contrib import admin
 from main import views
 
 urlpatterns = [
-    url(r'^socket/', views.ws, name='ws'),
     url(r'^api/', views.api, name='api'),
     url(r'^auth/', views.auth, name='auth'),
     url(r'^$', views.index, name='index'),

@@ -37,19 +37,3 @@ def api(request):
     for key in request.GET:
         flt[key] = request.GET[key]
     return HttpResponse(query[table](**flt))
-
-
-def ws(request):
-    import uwsgi
-    import time
-
-    uwsgi.websocket_handshake()
-    while True:
-        try:
-            msg = uwsgi.websocket_recv()
-        except OSError:
-            break
-        print("Message from client: %s" % msg)
-        uwsgi.websocket_send("[%s] %s" % (time.time(), msg))
-    
-    return HttpResponse(b'')
