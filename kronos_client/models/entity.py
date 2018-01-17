@@ -14,6 +14,8 @@ class EntityModel(QAbstractListModel):
     def __init__(self, *args):
         super(EntityModel, self).__init__()
         self.__entity = []
+        self.__entity_filtered = []
+        self.__filter = {}
         self.request = None
 
     @pyqtSlot(list)
@@ -22,27 +24,45 @@ class EntityModel(QAbstractListModel):
         self.request.acquired.connect(self.on_acquired)
         self.request.start()
 
-    @pyqtSlot(int, str, result=str)
-    def analyze(self, index, field):
-        return json.dumps(self.__entity[index][field])
+    @pyqtSlot(result=list)
+    def filters(self):
+        result = []
+        for ent in self.__entity:
+            if ent['tag'] not in result:
+                result.append(ent['tag_info'])
+        return result
+
+    @pyqtSlot(str, bool)
+    def set_filter(self, f, v):
+        self.__entity_filtered = []
+        self.__filter[f] = v
+        for ent in self.__entity:
+            for flt in self.__filter:
+                if ent['tag_info'] == flt and self.__filter[flt]:
+                    self.__entity_filtered.append(ent)
+        self.dataChanged.emit(QModelIndex(), QModelIndex())
+
 
     def on_acquired(self, data):
         self.request = None
         self.__entity = data
+        self.__entity_filtered = data
+        for ent in self.__entity:
+            self.__filter[ent['tag_info']] = True
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def rowCount(self, *args, **kwargs):
-        return len(self.__entity)
+        return len(self.__entity_filtered)
 
     def data(self, index, role=Qt.DisplayRole):
         if role in [Qt.DisplayRole, self.NameRole]:
-            return self.__entity[index.row()]['name']
+            return self.__entity_filtered[index.row()]['name']
         elif role == self.TagRole:
-            return self.__entity[index.row()]['tag']
+            return self.__entity_filtered[index.row()]['tag']
         elif role == self.InfoRole:
-            return self.__entity[index.row()]['info']
+            return self.__entity_filtered[index.row()]['info']
         elif role == self.PathRole:
-            return json.dumps(self.__entity[index.row()]['path'])
+            return json.dumps(self.__entity_filtered[index.row()]['path'])
 
     def roleNames(self):
         role_names = super(EntityModel, self).roleNames()

@@ -91,9 +91,9 @@ ApplicationWindow {
     }
 
     DropShadow {
-        color: "#55000000"
-        samples: 20
-        radius: 20
+        color: "#66000000"
+        samples: 10
+        radius: 10
         anchors.fill: header
         source: header
     }

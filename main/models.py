@@ -24,7 +24,7 @@ class Project(models.Model):
         for prj in cls.objects.all():
             if prj.name == '|':
                 continue
-            result.append({'name': prj.name, 'info': prj.info})
+            result.append({'id': str(prj.id), 'name': prj.name, 'info': prj.info})
         return json.dumps(result)
     
     def __str__(self):
@@ -75,7 +75,7 @@ class Entity(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Project, default=uuid.uuid4, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, default=uuid.uuid4, on_delete=models.CASCADE)
-    link = models.CharField(max_length=200, blank=True)
+    link = models.ManyToManyField("Entity", blank=True)
     name = models.CharField(max_length=100)
     info = models.CharField(max_length=200, blank=True)
     url = models.CharField(max_length=200, blank=True)
@@ -91,12 +91,20 @@ class Entity(models.Model):
             if key in mapper:
                 keywords[mapper[key]] = kwargs[key]
             else:
-                keywords[key] = kwargs[key]
+                if key == 'id':
+                    keywords[key] = uuid.UUID(kwargs[key])
+                else:
+                    keywords[key] = kwargs[key]
         for ent in cls.objects.filter(**keywords):
-            result.append({'name': ent.name, 'info': ent.info, 'project': ent.project.name,
+            link = []
+            for l in ent.link.all():
+                link.append(str(l.id))
+
+            result.append({'id': str(ent.id), 'name': ent.name, 'info': ent.info,
                            'genus': ent.tag.genus.name, 'genus_info': ent.tag.genus.info,
                            'tag': ent.tag.name, 'tag_info': ent.tag.info,
-                           'path': ent.path()})
+                           'link': link, 'path': ent.path(),
+                           })
         return json.dumps(result)
     
     def genus(self):
