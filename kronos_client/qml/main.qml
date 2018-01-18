@@ -63,7 +63,6 @@ ApplicationWindow {
             font.family: qsTr("微软雅黑")
             onClicked: {
                 swipeView.currentIndex = 0
-                asset.pop.close()
             }
         }
         TabButton {
@@ -74,7 +73,6 @@ ApplicationWindow {
             font.family: qsTr("微软雅黑")
             onClicked: {
                 swipeView.currentIndex = 1
-                asset.pop.close()
             }
         }
         TabButton {
@@ -85,7 +83,6 @@ ApplicationWindow {
             font.family: qsTr("微软雅黑")
             onClicked: {
                 swipeView.currentIndex = 2
-                asset.pop.close()
             }
         }
     }

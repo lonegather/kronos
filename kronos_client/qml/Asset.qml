@@ -7,7 +7,6 @@ Item {
     anchors.margins: 5
     anchors.fill: parent
 
-    property alias pop: pop
     signal acquired
 
     Column {
@@ -22,40 +21,68 @@ Item {
             height: 50
             visible: false
             width: parent.width
-            color: "#272727"
+            color: "#2a2a2a"
 
             signal filterChanged
 
-            ListView {
-                id: filterView
-                spacing: 10
-                anchors.fill: parent
+            Row {
                 anchors.leftMargin: 10
                 anchors.rightMargin: 10
-                orientation: ListView.Horizontal
-                delegate: Item {
-                    id: filterItem
+                anchors.fill: parent
+                spacing: 10
+
+                ComboBox {
+                    id: filterLink
+                    font.family: qsTr("微软雅黑")
+                    height: parent.height - parent.spacing
+                    anchors.verticalCenter: parent.verticalCenter
+                    onActivated: {
+                        gridView.model = []
+                        entityModel.set_link(currentText)
+                    }
+                }
+
+                ListView {
+                    id: filterView
+                    spacing: 10
+                    x: filterLink.width + parent.spacing
+                    width: parent.width - parent.spacing - filterLink.width - addBtn.width
                     height: parent.height
-                    width: 80
-                    CheckBox {
-                        checked: true
-                        anchors.fill: parent
-                        text: modelData
-                        font.weight: Font.Bold
-                        font.pointSize: 12
-                        font.family: qsTr("微软雅黑")
-                        onToggled: {
-                            gridView.model = []
-                            entityModel.set_filter(text, checked)
+                    anchors.leftMargin: 10
+                    anchors.rightMargin: 10
+                    orientation: ListView.Horizontal
+                    delegate: Item {
+                        id: filterItem
+                        height: parent.height
+                        width: 80
+                        CheckBox {
+                            checked: true
+                            anchors.fill: parent
+                            text: modelData
+                            font.weight: Font.Bold
+                            font.pointSize: 12
+                            font.family: qsTr("微软雅黑")
+                            onToggled: {
+                                gridView.model = []
+                                entityModel.set_filter(text, checked)
+                            }
                         }
                     }
                 }
-            }
 
-            Connections {
-                target: entityModel
-                onDataChanged: {
-                    filterView.model = entityModel.filters()
+                ToolButton {
+                    id: addBtn
+                    flat: true
+                    width: parent.height
+                    Layout.fillHeight: true
+                }
+
+                Connections {
+                    target: entityModel
+                    onDataChanged: {
+                        filterView.model = entityModel.filters()
+                        filterLink.model = entityModel.links()
+                    }
                 }
             }
         }
@@ -64,7 +91,7 @@ Item {
             id: gridView
             clip: true
             focus: true
-            height: parent.height - 50
+            height: parent.height - parent.spacing - filterBar.height
             width: parent.width
             cellWidth: 158
             cellHeight: 183
@@ -141,7 +168,7 @@ Item {
                     }
                     Text {
                         id: label
-                        text: name
+                        text: info == "" ? name : info
                         elide: Text.ElideRight
                         color: wrapper.GridView.isCurrentItem ? "#b0bec5" : "darkgray"
                         font.family: qsTr("微软雅黑")
@@ -168,9 +195,15 @@ Item {
                     }
 
                     onDoubleClicked: {
+                        var space = grid.anchors.margins
+                        var gx = mouse.x + wrapper.x + gridView.x + space - pop.width / 2
+                        var gy = mouse.y + wrapper.y + gridView.y + space - pop.height / 2
+                        pop.x = Math.min(gridView.width - space,
+                                         Math.max(space, gx))
+                        pop.y = Math.min(gridView.height - space,
+                                         Math.max(filterBar.height + space, gy))
                         pop.setName(name)
                         pop.setInfo(info)
-                        pop.setTag(tag)
                         pop.setPath(path)
                         pop.open()
                     }
@@ -183,15 +216,18 @@ Item {
         }
     }
 
+    BusyIndicator {
+        id: busy
+        anchors.centerIn: parent
+    }
+
     Popup {
         id: pop
-        width: grid.width
-        height: grid.height
-        x: grid.x
-        y: grid.y
+        width: 506
+        height: 319
         modal: false
         focus: true
-        closePolicy: Popup.CloseOnEscape
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         function setName(str) {
             popName.text = str
@@ -199,10 +235,6 @@ Item {
 
         function setInfo(str) {
             popInfo.text = str
-        }
-
-        function setTag(str) {
-            popTag.text = str
         }
 
         function setPath(path) {
@@ -220,69 +252,107 @@ Item {
             id: pathModel
         }
 
-        Row {
+        Column {
             id: popBrief
-            anchors.margins: 21
+            anchors.margins: 5
             anchors.fill: parent
-            spacing: anchors.margins
-            Column {
+            spacing: anchors.margins + 5
+            Row {
+                id: bio
                 spacing: 10
-                width: (popBrief.width - popBrief.anchors.margins) / 3
+                width: parent.width
+                height: 128
                 Rectangle {
                     color: "grey"
-                    width: parent.width
-                    height: width
+                    width: height
+                    height: parent.height
                 }
-                Rectangle {
-                    color: "#00000000"
-                    width: parent.width
-                    height: 30
-                    Text {
-                        id: popName
-                        anchors.fill: parent
-                        color: "darkgray"
-                        font.pixelSize: 30
-                        font.family: qsTr("微软雅黑")
+                Column {
+                    width: bio.width - option.width - bio.spacing * 2 - 128
+                    height: parent.height
+                    Rectangle {
+                        color: "#33000000"
+                        width: parent.width
+                        height: 43
+                        Label {
+                            id: popName
+                            anchors.fill: parent
+                            color: "darkgray"
+                            font.pixelSize: 20
+                            font.family: qsTr("微软雅黑")
+                        }
+                        TextField {
+                            id: popNameInput
+                            anchors.fill: parent
+                            color: popName.color
+                            font.pixelSize: popName.font.pixelSize
+                            font.family: popName.font.family
+                        }
+                    }
+                    Rectangle {
+                        color: "#22000000"
+                        width: parent.width
+                        height: 85
+                        TextArea {
+                            id: popInfo
+                            anchors.fill: parent
+                            color: "darkgray"
+                            font.pixelSize: 15
+                            font.family: qsTr("微软雅黑")
+                            wrapMode: Text.WordWrap
+                        }
+                        TextArea {
+                            id: popInfoInput
+                            anchors.fill: parent
+                            color: popInfo.color
+                            font.pixelSize: popInfo.font.pixelSize
+                            font.family: popInfo.font.family
+                            wrapMode: Text.WordWrap
+                        }
                     }
                 }
-                Rectangle {
-                    color: "#00000000"
-                    width: parent.width
-                    height: 20
-                    Text {
-                        id: popTag
-                        anchors.fill: parent
-                        color: "darkgray"
-                        font.pixelSize: 20
-                        font.family: qsTr("微软雅黑")
+                Column {
+                    id: option
+                    width: 40
+                    height: parent.height
+                    Rectangle {
+                        color: "#33000000"
+                        width: parent.width
+                        height: width
+                        ToolButton {
+                            anchors.fill: parent
+                        }
                     }
-                }
-                Rectangle {
-                    color: "#00000000"
-                    width: parent.width
-                    height: 100
-                    Text {
-                        id: popInfo
-                        anchors.fill: parent
-                        color: "darkgray"
-                        font.pixelSize: 20
-                        font.family: qsTr("微软雅黑")
-                        wrapMode: Text.WordWrap
+                    Rectangle {
+                        color: "#22000000"
+                        width: parent.width
+                        height: width
+                        ToolButton {
+                            anchors.fill: parent
+                        }
+                    }
+                    Rectangle {
+                        color: "#33000000"
+                        width: parent.width
+                        height: width
+                        ToolButton {
+                            anchors.fill: parent
+                        }
                     }
                 }
             }
 
             ListView {
                 id: pathView
-                width: (popBrief.width - popBrief.anchors.margins) / 3 * 2
-                height: popBrief.height
+                width: bio.width
+                height: popBrief.height - bio.height - bio.spacing
                 clip: true
-                spacing: 12
+                spacing: 5
                 model: pathModel
                 flickableDirection: Flickable.AutoFlickIfNeeded
                 delegate: Item {
                     width: parent.width
-                    height: 100
+                    height: 50
                     clip: true
                     Rectangle {
                         anchors.fill: parent
@@ -304,9 +374,9 @@ Item {
     Connections {
         target: header
         onProjectChanged: {
+            busy.visible = true
             filterBar.visible = false
             gridView.model = []
-            filterView.model = []
             pop.close()
             entityModel.update(
                         ["project", header.currentProject, "genus", "asset"])
@@ -316,6 +386,7 @@ Item {
     Connections {
         target: entityModel
         onDataChanged: {
+            busy.visible = false
             filterBar.visible = true
             gridView.model = entityModel
             acquired()

@@ -29,11 +29,16 @@ def auth(request):
 
 def api(request):
     table = request.path.split('/')[-1]
-    query = {'project': models.Project.all,
-             'entity': models.Entity.get,
-             'stage': models.Stage.get,
-             }
-    flt = {}
-    for key in request.GET:
-        flt[key] = request.GET[key]
-    return HttpResponse(query[table](**flt))
+    query_dict = {'project': models.Project.all,
+                  'entity': models.Entity.get,
+                  'stage': models.Stage.get,
+                  }
+    query_list = {'entity_id': models.Entity.get_by_id,
+                  }
+    if table in query_dict:
+        flt = {}
+        for key in request.GET:
+            flt[key] = request.GET[key]
+        return HttpResponse(query_dict[table](**flt))
+    elif table in query_list:
+        return HttpResponse(query_list[table](request.GET['list']))

@@ -21,6 +21,7 @@ Rectangle {
         ComboBox {
             id: comboBox
             //height: 30
+            flat: true
             enabled: false
             font.family: qsTr("微软雅黑")
             anchors.verticalCenter: parent.verticalCenter

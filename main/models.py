@@ -106,6 +106,21 @@ class Entity(models.Model):
                            'link': link, 'path': ent.path(),
                            })
         return json.dumps(result)
+
+    @classmethod
+    def get_by_id(cls, id_list):
+        result = []
+        id_list = json.loads(id_list)
+        for i in id_list:
+            link = []
+            ent = cls.objects.get(id=i)
+            for l in ent.link.all():
+                link.append(str(l.id))
+            result.append({'id': str(ent.id), 'name': ent.name, 'info': ent.info,
+                           'genus': ent.tag.genus.name, 'genus_info': ent.tag.genus.info,
+                           'tag': ent.tag.name, 'tag_info': ent.tag.info,
+                           })
+        return json.dumps(result)
     
     def genus(self):
         return self.tag.genus
