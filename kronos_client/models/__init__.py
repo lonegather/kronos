@@ -12,6 +12,7 @@ def request(table, **filters):
         url += '%s=%s&' % (field, filters[field])
 
     try:
+        result = requests.get(url).text
         return json.loads(requests.get(url).text)
     except ConnectionError:
         return []

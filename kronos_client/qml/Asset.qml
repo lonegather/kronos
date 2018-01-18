@@ -196,16 +196,16 @@ Item {
 
                     onDoubleClicked: {
                         var space = grid.anchors.margins
-                        var gx = mouse.x + wrapper.x + gridView.x + space - pop.width / 2
-                        var gy = mouse.y + wrapper.y + gridView.y + space - pop.height / 2
-                        pop.x = Math.min(gridView.width - space,
+                        var gx = mouse.x + wrapper.x + gridView.x + space - assetInfo.pop.width / 2
+                        var gy = mouse.y + wrapper.y + gridView.y + space - assetInfo.pop.height / 2
+                        assetInfo.pop.x = Math.min(gridView.width - space,
                                          Math.max(space, gx))
-                        pop.y = Math.min(gridView.height - space,
+                        assetInfo.pop.y = Math.min(gridView.height - space,
                                          Math.max(filterBar.height + space, gy))
-                        pop.setName(name)
-                        pop.setInfo(info)
-                        pop.setPath(path)
-                        pop.open()
+                        assetInfo.pop.setName(name)
+                        assetInfo.pop.setInfo(info)
+                        assetInfo.pop.setPath(path)
+                        assetInfo.pop.open()
                     }
                 }
             }
@@ -221,154 +221,8 @@ Item {
         anchors.centerIn: parent
     }
 
-    Popup {
-        id: pop
-        width: 506
-        height: 319
-        modal: false
-        focus: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-
-        function setName(str) {
-            popName.text = str
-        }
-
-        function setInfo(str) {
-            popInfo.text = str
-        }
-
-        function setPath(path) {
-            pathModel.clear()
-            var pathDic = JSON.parse(path)
-            for (var i in pathDic) {
-                pathModel.append({
-                                     pathName: stage.data(i, 'info'),
-                                     pathValue: pathDic[i]
-                                 })
-            }
-        }
-
-        ListModel {
-            id: pathModel
-        }
-
-        Column {
-            id: popBrief
-            anchors.margins: 5
-            anchors.fill: parent
-            spacing: anchors.margins + 5
-            Row {
-                id: bio
-                spacing: 10
-                width: parent.width
-                height: 128
-                Rectangle {
-                    color: "grey"
-                    width: height
-                    height: parent.height
-                }
-                Column {
-                    width: bio.width - option.width - bio.spacing * 2 - 128
-                    height: parent.height
-                    Rectangle {
-                        color: "#33000000"
-                        width: parent.width
-                        height: 43
-                        Label {
-                            id: popName
-                            anchors.fill: parent
-                            color: "darkgray"
-                            font.pixelSize: 20
-                            font.family: qsTr("微软雅黑")
-                        }
-                        TextField {
-                            id: popNameInput
-                            anchors.fill: parent
-                            color: popName.color
-                            font.pixelSize: popName.font.pixelSize
-                            font.family: popName.font.family
-                        }
-                    }
-                    Rectangle {
-                        color: "#22000000"
-                        width: parent.width
-                        height: 85
-                        TextArea {
-                            id: popInfo
-                            anchors.fill: parent
-                            color: "darkgray"
-                            font.pixelSize: 15
-                            font.family: qsTr("微软雅黑")
-                            wrapMode: Text.WordWrap
-                        }
-                        TextArea {
-                            id: popInfoInput
-                            anchors.fill: parent
-                            color: popInfo.color
-                            font.pixelSize: popInfo.font.pixelSize
-                            font.family: popInfo.font.family
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                }
-                Column {
-                    id: option
-                    width: 40
-                    height: parent.height
-                    Rectangle {
-                        color: "#33000000"
-                        width: parent.width
-                        height: width
-                        ToolButton {
-                            anchors.fill: parent
-                        }
-                    }
-                    Rectangle {
-                        color: "#22000000"
-                        width: parent.width
-                        height: width
-                        ToolButton {
-                            anchors.fill: parent
-                        }
-                    }
-                    Rectangle {
-                        color: "#33000000"
-                        width: parent.width
-                        height: width
-                        ToolButton {
-                            anchors.fill: parent
-                        }
-                    }
-                }
-            }
-
-            ListView {
-                id: pathView
-                width: bio.width
-                height: popBrief.height - bio.height - bio.spacing
-                clip: true
-                spacing: 5
-                model: pathModel
-                flickableDirection: Flickable.AutoFlickIfNeeded
-                delegate: Item {
-                    width: parent.width
-                    height: 50
-                    clip: true
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: 5
-                        color: "#33000000"
-                        Text {
-                            anchors.fill: parent
-                            text: pathName + ":" + pathValue
-                            color: "darkgray"
-                            font.pixelSize: 12
-                            font.family: qsTr("微软雅黑")
-                        }
-                    }
-                }
-            }
-        }
+    AssetInfo {
+        id: assetInfo
     }
 
     Connections {
@@ -377,7 +231,7 @@ Item {
             busy.visible = true
             filterBar.visible = false
             gridView.model = []
-            pop.close()
+            assetInfo.pop.close()
             entityModel.update(
                         ["project", header.currentProject, "genus", "asset"])
         }
