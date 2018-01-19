@@ -7,19 +7,17 @@ from PyQt5.QtQml import QQmlApplicationEngine
 if __name__ == "__main__":
     import os
     import sys
-    from models import project, stage, entity
+    from models import preset, entity
 
     os.putenv('QT_QUICK_CONTROLS_STYLE', 'Material')
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 
     app = QGuiApplication(sys.argv)
-    prj = project.Project()
-    stg = stage.Stage()
+    prs = preset.Preset()
     ent = entity.EntityModel()
 
     engine = QQmlApplicationEngine()
-    engine.rootContext().setContextProperty("project", prj)
-    engine.rootContext().setContextProperty("stage", stg)
+    engine.rootContext().setContextProperty("preset", prs)
     engine.rootContext().setContextProperty("entityModel", ent)
     engine.load("qml/main.qml")
     engine.quit.connect(app.quit)

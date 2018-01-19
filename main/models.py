@@ -25,7 +25,7 @@ class Project(models.Model):
             if prj.name == '|':
                 continue
             result.append({'id': str(prj.id), 'name': prj.name, 'info': prj.info})
-        return json.dumps(result)
+        return result
     
     def __str__(self):
         return self.name
@@ -64,6 +64,23 @@ class Tag(models.Model):
     name = models.CharField(max_length=50)
     info = models.CharField(max_length=50, blank=True)
     url = models.CharField(max_length=200, blank=True)
+
+    @classmethod
+    def get(cls, **kwargs):
+        result = []
+        keywords = {}
+        mapper = {'project': 'project__name',
+                  'genus': 'genus__name',
+                  }
+        for key in kwargs:
+            if key in mapper:
+                keywords[mapper[key]] = kwargs[key]
+            else:
+                keywords[key] = kwargs[key]
+        for tag in cls.objects.filter(**keywords):
+            result.append({'name': tag.name, 'info': tag.info, 'project': tag.project.name,
+                           'genus': tag.genus.name, 'genus_info': tag.genus.info})
+        return result
     
     def __str__(self):
         return self.name if self.project.name == '|' else '%s | %s' % (self.project, self.name)
@@ -105,7 +122,7 @@ class Entity(models.Model):
                            'tag': ent.tag.name, 'tag_info': ent.tag.info,
                            'link': link, 'path': ent.path(),
                            })
-        return json.dumps(result)
+        return result
 
     @classmethod
     def get_by_id(cls, id_list):
@@ -120,7 +137,7 @@ class Entity(models.Model):
                            'genus': ent.tag.genus.name, 'genus_info': ent.tag.genus.info,
                            'tag': ent.tag.name, 'tag_info': ent.tag.info,
                            })
-        return json.dumps(result)
+        return result
     
     def genus(self):
         return self.tag.genus
@@ -185,7 +202,7 @@ class Stage(models.Model):
             result.append({'name': stg.name, 'info': stg.info, 'project': stg.project.name,
                            'genus': stg.genus.name, 'genus_info': stg.genus.info,
                            'path': stg.path})
-        return json.dumps(result)
+        return result
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Project, default=uuid.uuid4, on_delete=models.CASCADE)

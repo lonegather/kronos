@@ -17,47 +17,71 @@ Item {
 
         Rectangle {
             id: filterBar
-            radius: 5
+            radius: 10
             height: 50
             visible: false
             width: parent.width
-            color: "#2a2a2a"
+            gradient: Gradient {
+                GradientStop {
+                    position: 0.0
+                    color: "#2a000000"
+                }
+                GradientStop {
+                    position: 1.0
+                    color: "#00000000"
+                }
+            }
 
             signal filterChanged
 
             Row {
-                anchors.leftMargin: 10
-                anchors.rightMargin: 10
                 anchors.fill: parent
-                spacing: 10
 
-                ComboBox {
-                    id: filterLink
-                    font.family: qsTr("微软雅黑")
-                    height: parent.height - parent.spacing
-                    anchors.verticalCenter: parent.verticalCenter
-                    onActivated: {
-                        gridView.model = []
-                        entityModel.set_link(currentText)
-                    }
+                ToolButton {
+                    id: addBtn
+                    flat: true
+                    width: parent.height
+                    Layout.fillHeight: true
+                }
+
+                ToolButton {
+                    id: delBtn
+                    flat: true
+                    width: parent.height
+                    Layout.fillHeight: true
+                }
+
+                ToolButton {
+                    id: impBtn
+                    flat: true
+                    width: parent.height
+                    Layout.fillHeight: true
+                }
+
+                ToolButton {
+                    id: synBtn
+                    flat: true
+                    width: parent.height
+                    Layout.fillHeight: true
                 }
 
                 ListView {
                     id: filterView
                     spacing: 10
-                    x: filterLink.width + parent.spacing
-                    width: parent.width - parent.spacing - filterLink.width - addBtn.width
+                    width: parent.width - filterRec.width - addBtn.width
+                           - delBtn.width - impBtn.width - synBtn.width
                     height: parent.height
-                    anchors.leftMargin: 10
-                    anchors.rightMargin: 10
                     orientation: ListView.Horizontal
+                    layoutDirection: Qt.RightToLeft
                     delegate: Item {
                         id: filterItem
                         height: parent.height
-                        width: 80
+                        width: 100
                         CheckBox {
                             checked: true
                             anchors.fill: parent
+                            anchors.leftMargin: 5
+                            anchors.rightMargin: 5
                             text: modelData
                             font.weight: Font.Bold
                             font.pointSize: 12
@@ -68,13 +92,29 @@ Item {
                             }
                         }
                     }
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "#00000000"
+                    }
                 }
 
-                ToolButton {
-                    id: addBtn
-                    flat: true
-                    width: parent.height
-                    Layout.fillHeight: true
+                Rectangle {
+                    id: filterRec
+                    width: 120
+                    height: parent.height
+                    color: "#00000000"
+                    ComboBox {
+                        id: filterLink
+                        font.family: qsTr("微软雅黑")
+                        anchors.fill: parent
+                        anchors.topMargin: 5
+                        anchors.bottomMargin: 5
+                        anchors.rightMargin: 10
+                        onActivated: {
+                            gridView.model = []
+                            entityModel.set_link(currentText)
+                        }
+                    }
                 }
 
                 Connections {
@@ -199,9 +239,10 @@ Item {
                         var gx = mouse.x + wrapper.x + gridView.x + space - assetInfo.pop.width / 2
                         var gy = mouse.y + wrapper.y + gridView.y + space - assetInfo.pop.height / 2
                         assetInfo.pop.x = Math.min(gridView.width - space,
-                                         Math.max(space, gx))
-                        assetInfo.pop.y = Math.min(gridView.height - space,
-                                         Math.max(filterBar.height + space, gy))
+                                                   Math.max(space, gx))
+                        assetInfo.pop.y = Math.min(
+                                    gridView.height - space,
+                                    Math.max(filterBar.height + space, gy))
                         assetInfo.pop.setName(name)
                         assetInfo.pop.setInfo(info)
                         assetInfo.pop.setPath(path)
@@ -230,6 +271,7 @@ Item {
         onProjectChanged: {
             busy.visible = true
             filterBar.visible = false
+            filterLink.currentIndex = 0
             gridView.model = []
             assetInfo.pop.close()
             entityModel.update(

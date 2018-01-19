@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import json
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
@@ -29,6 +30,13 @@ def auth(request):
 
 def api(request):
     table = request.path.split('/')[-1]
+    if table == "preset":
+        preset = {"project": models.Project.all(),
+                  "stage": models.Stage.get(),
+                  "tag": models.Tag.get(),
+                  }
+        return HttpResponse(json.dumps(preset))
+
     query_dict = {'project': models.Project.all,
                   'entity': models.Entity.get,
                   'stage': models.Stage.get,
@@ -39,6 +47,6 @@ def api(request):
         flt = {}
         for key in request.GET:
             flt[key] = request.GET[key]
-        return HttpResponse(query_dict[table](**flt))
+        return HttpResponse(json.dumps(query_dict[table](**flt)))
     elif table in query_list:
-        return HttpResponse(query_list[table](request.GET['list']))
+        return HttpResponse(json.dumps(query_list[table](request.GET['list'])))

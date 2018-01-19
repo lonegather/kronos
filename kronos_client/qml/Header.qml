@@ -12,12 +12,13 @@ HeaderForm {
 
     Component.onCompleted: {
         comboEnabled = false
-        stage.get_data()
+        preset.get_data()
     }
 
     projectCB.onActivated: {
         comboEnabled = false
-        project.get_info(projectCB.currentText, "info")
+        var presetProject = JSON.parse(preset.data("project"))
+        projectLbl.text = presetProject[projectCB.currentIndex]["info"]
         header.projectChanged(projectCB.currentText)
     }
 
@@ -63,26 +64,26 @@ HeaderForm {
     }
 
     Connections {
-        target: stage
+        target: preset
         onAcquired: {
-            project.get_list()
-        }
-        onFailed: {
-            projectLbl.text = message
-            background = "#cc3333"
-        }
-    }
+            var presetTag = JSON.parse(preset.data("tag"))
+            var presetStage = JSON.parse(preset.data("stage"))
+            var presetProject = JSON.parse(preset.data("project"))
 
-    Connections {
-        target: project
-        onListAcquired: {
-            projectCB.model = projectList
-            project.get_info(projectCB.currentText, "info")
+            var projectModel = []
+            for (var i in presetProject) {
+                projectModel[i] = presetProject[i]["name"]
+            }
+            projectCB.model = projectModel
+            projectLbl.text = presetProject[projectCB.currentIndex]["info"]
+
+            for (i in presetStage) {
+
+
+                //console.log(presetStage[i]["name"])
+            }
+
             header.projectChanged(projectCB.currentText)
-        }
-        onInfoAcquired: {
-            projectLbl.text = projectInfo
-            background = "#363636"
         }
         onFailed: {
             projectLbl.text = message

@@ -1,36 +1,34 @@
 ﻿# -*- coding: utf-8 -*-
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QThread
+import json
 from . import request
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QThread
 
 
-class Stage(QObject):
+class Preset(QObject):
 
     def __init__(self):
-        super(Stage, self).__init__()
-        self.stage_list = []
+        super(Preset, self).__init__()
+        self.preset_list = []
         self.request = None
 
     acquired = pyqtSignal()
     failed = pyqtSignal(str, arguments=['message'])
 
-    @pyqtSlot(str, str, result=str)
-    def data(self, name, field):
-        for stg in self.stage_list:
-            if stg['name'] == name:
-                return stg[field]
-        return ''
+    @pyqtSlot(str, result=str)
+    def data(self, table):
+        return json.dumps(self.preset_list[table])
 
     @pyqtSlot()
     def get_data(self, force=False):
-        if force or not self.stage_list:
+        if force or not self.preset_list:
             self.request = RequestThread()
             self.request.acquired.connect(self.on_acquired)
             self.request.start()
 
     def on_acquired(self, data):
-        self.stage_list = data
+        self.preset_list = data
 
-        if not self.stage_list:
+        if not self.preset_list:
             self.failed.emit(u"连接失败")
             return
 
@@ -39,10 +37,10 @@ class Stage(QObject):
 
 class RequestThread(QThread):
 
-    acquired = pyqtSignal(list)
+    acquired = pyqtSignal(dict)
 
     def __init__(self):
         super(RequestThread, self).__init__()
 
     def run(self):
-        self.acquired.emit(request('stage'))
+        self.acquired.emit(request('preset'))

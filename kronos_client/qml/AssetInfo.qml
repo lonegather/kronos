@@ -3,8 +3,8 @@ import QtQuick.Controls 2.2
 
 Item {
     property alias pop: pop
-    //state: "edit"
 
+    //state: "edit"
     states: [
         State {
             name: "edit"
@@ -50,7 +50,9 @@ Item {
         modal: false
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-
+        onClosed: {
+            state = ""
+        }
 
         function setName(str) {
             popName.text = str
@@ -61,11 +63,21 @@ Item {
         }
 
         function setPath(path) {
+            var presetStage = JSON.parse(preset.data("stage"))
+            var filteredStage = {
+
+            }
+            for (var i in presetStage) {
+                if (presetStage[i]["project"] === header.currentProject) {
+                    filteredStage[presetStage[i]["name"]] = presetStage[i]["info"]
+                }
+            }
+
             pathModel.clear()
             var pathDic = JSON.parse(path)
-            for (var i in pathDic) {
+            for (i in pathDic) {
                 pathModel.append({
-                                     pathName: stage.data(i, 'info'),
+                                     pathName: filteredStage[i],
                                      pathValue: pathDic[i]
                                  })
             }
@@ -94,31 +106,36 @@ Item {
                     width: bio.width - option.width - bio.spacing * 2 - 128
                     height: parent.height
                     Rectangle {
-                        color: "#33000000"
+                        color: "#00000000"
                         width: parent.width
                         height: 43
                         Label {
                             id: popName
                             anchors.fill: parent
                             color: "darkgray"
+                            lineHeight: 1.1
                             font.pixelSize: 20
                             font.family: qsTr("微软雅黑")
+                            //verticalAlignment: TextInput.AlignVCenter
                         }
                         TextField {
                             id: popNameInput
                             visible: false
+                            topPadding: 5
                             anchors.fill: parent
                             color: popName.color
                             font.pixelSize: popName.font.pixelSize
                             font.family: popName.font.family
+                            //verticalAlignment: popName.verticalAlignment
                         }
                     }
                     Rectangle {
-                        color: "#22000000"
+                        color: "#00000000"
                         width: parent.width
                         height: 85
                         Label {
                             id: popInfo
+                            topPadding: 5
                             anchors.fill: parent
                             color: "darkgray"
                             font.pixelSize: 15
@@ -128,6 +145,7 @@ Item {
                         TextArea {
                             id: popInfoInput
                             visible: false
+                            topPadding: 5
                             anchors.fill: parent
                             color: popInfo.color
                             font.pixelSize: popInfo.font.pixelSize
@@ -161,6 +179,11 @@ Item {
                         ToolButton {
                             id: editBtn
                             anchors.fill: parent
+                            onClicked: {
+                                popNameInput.text = popName.text
+                                popInfoInput.text = popInfo.text
+                                pop.parent.state = "edit"
+                            }
                         }
                     }
                     Rectangle {
@@ -172,6 +195,9 @@ Item {
                         ToolButton {
                             id: cancelBtn
                             anchors.fill: parent
+                            onClicked: {
+                                pop.parent.state = ""
+                            }
                         }
                     }
                     Rectangle {
@@ -213,19 +239,6 @@ Item {
                         }
                     }
                 }
-            }
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            property point init: "0,0"
-            onPressed: {
-                init = Qt.point(mouse.x, mouse.y)
-            }
-            onPositionChanged: {
-                var delta = Qt.point(mouse.x - init.x, mouse.y - init.y)
-                pop.x = pop.x + delta.x
-                pop.y = pop.y + delta.y
             }
         }
     }

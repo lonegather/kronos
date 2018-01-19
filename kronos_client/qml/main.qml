@@ -17,7 +17,6 @@ ApplicationWindow {
 
     header: Header {
         id: header
-        height: 50
     }
 
     MouseArea {
@@ -40,15 +39,27 @@ ApplicationWindow {
         currentIndex: 1
 
         Page {
+            background: Rectangle {
+                anchors.fill: parent
+                color: "#33000000"
+            }
         }
 
         Page {
+            background: Rectangle {
+                anchors.fill: parent
+                color: "#33000000"
+            }
             Asset {
                 id: asset
             }
         }
 
         Page {
+            background: Rectangle {
+                anchors.fill: parent
+                color: "#33000000"
+            }
         }
     }
 
