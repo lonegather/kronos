@@ -30,7 +30,7 @@ class EntityModel(QAbstractListModel):
     def filters(self):
         result = []
         for ent in self.__entity:
-            if ent['tag'] not in result:
+            if ent['tag_info'] not in result:
                 result.append(ent['tag_info'])
         return result
 
@@ -46,9 +46,10 @@ class EntityModel(QAbstractListModel):
         self.__filter[f] = v
         self.update_filter()
 
-    @pyqtSlot(str)
-    def set_link(self, l):
+    @pyqtSlot(str, str)
+    def set_link(self, l, batch):
         self.__link_current = l
+        self.__link = json.loads(batch)
         self.update_filter()
 
     def update_filter(self):
@@ -70,22 +71,10 @@ class EntityModel(QAbstractListModel):
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def on_acquired(self, data):
-        link = []
         self.__entity = data
         self.__entity_filtered = data
         for ent in self.__entity:
             self.__filter[ent['tag_info']] = True
-            for l in ent['link']:
-                if l not in link:
-                    link.append(l)
-
-        self.request = RequestLinkThread(link)
-        self.request.acquired.connect(self.on_link_acquired)
-        self.request.start()
-
-    def on_link_acquired(self, data):
-        self.request = None
-        self.__link = data
         self.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def rowCount(self, *args, **kwargs):
@@ -122,15 +111,3 @@ class RequestThread(QThread):
 
     def run(self):
         self.acquired.emit(request('entity', **self.filters))
-
-
-class RequestLinkThread(QThread):
-
-    acquired = pyqtSignal(list)
-
-    def __init__(self, id_list):
-        super(RequestLinkThread, self).__init__()
-        self.filter = {'list': json.dumps(id_list)}
-
-    def run(self):
-        self.acquired.emit(request('entity_id', **self.filter))

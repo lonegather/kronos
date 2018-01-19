@@ -117,7 +117,8 @@ class Entity(models.Model):
             for l in ent.link.all():
                 link.append(str(l.id))
 
-            result.append({'id': str(ent.id), 'name': ent.name, 'info': ent.info,
+            result.append({'id': str(ent.id), 'project': ent.project.name,
+                           'name': ent.name, 'info': ent.info,
                            'genus': ent.tag.genus.name, 'genus_info': ent.tag.genus.info,
                            'tag': ent.tag.name, 'tag_info': ent.tag.info,
                            'link': link, 'path': ent.path(),

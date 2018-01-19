@@ -34,6 +34,7 @@ def api(request):
         preset = {"project": models.Project.all(),
                   "stage": models.Stage.get(),
                   "tag": models.Tag.get(),
+                  "batch": models.Entity.get(genus='batch')
                   }
         return HttpResponse(json.dumps(preset))
 

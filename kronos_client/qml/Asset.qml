@@ -112,7 +112,16 @@ Item {
                         anchors.rightMargin: 10
                         onActivated: {
                             gridView.model = []
-                            entityModel.set_link(currentText)
+                            var presetBatch = JSON.parse(preset.data("batch"))
+                            var batch = []
+                            for (var i in presetBatch) {
+                                if (presetBatch[i]["project"] === header.currentProject) {
+                                    batch.push(presetBatch[i])
+                                }
+                            }
+
+                            entityModel.set_link(currentText,
+                                                 JSON.stringify(batch))
                         }
                     }
                 }
@@ -120,8 +129,16 @@ Item {
                 Connections {
                     target: entityModel
                     onDataChanged: {
+                        var presetBatch = JSON.parse(preset.data("batch"))
+                        var batchList = ["All"]
+                        for (var i in presetBatch) {
+                            if (presetBatch[i]["project"] === header.currentProject) {
+                                batchList.push(presetBatch[i]["name"])
+                            }
+                        }
+
                         filterView.model = entityModel.filters()
-                        filterLink.model = entityModel.links()
+                        filterLink.model = batchList
                     }
                 }
             }
