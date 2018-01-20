@@ -3,11 +3,58 @@ import QtQuick.Controls 2.2
 
 Item {
     property alias pop: pop
+    property real popWidth: 506
+    property real popHeight: 319
 
     //state: "edit"
     states: [
         State {
-            name: "edit"
+            name: ""
+            PropertyChanges {
+                target: pop
+                closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+            }
+            PropertyChanges {
+                target: edit
+                visible: true
+            }
+            PropertyChanges {
+                target: exit
+                visible: true
+            }
+            PropertyChanges {
+                target: confirm
+                visible: false
+            }
+            PropertyChanges {
+                target: cancel
+                visible: false
+            }
+            PropertyChanges {
+                target: popName
+                visible: true
+            }
+            PropertyChanges {
+                target: popNameInput
+                visible: false
+                text: ""
+            }
+            PropertyChanges {
+                target: popInfo
+                visible: true
+            }
+            PropertyChanges {
+                target: popInfoInput
+                visible: false
+                text: ""
+            }
+        },
+        State {
+            name: "new"
+            PropertyChanges {
+                target: pop
+                closePolicy: Popup.NoAutoClose
+            }
             PropertyChanges {
                 target: edit
                 visible: false
@@ -31,6 +78,7 @@ Item {
             PropertyChanges {
                 target: popNameInput
                 visible: true
+                text: ""
             }
             PropertyChanges {
                 target: popInfo
@@ -39,17 +87,58 @@ Item {
             PropertyChanges {
                 target: popInfoInput
                 visible: true
+                text: ""
+            }
+        },
+        State {
+            name: "edit"
+            PropertyChanges {
+                target: pop
+                closePolicy: Popup.NoAutoClose
+            }
+            PropertyChanges {
+                target: edit
+                visible: false
+            }
+            PropertyChanges {
+                target: exit
+                visible: false
+            }
+            PropertyChanges {
+                target: confirm
+                visible: true
+            }
+            PropertyChanges {
+                target: cancel
+                visible: true
+            }
+            PropertyChanges {
+                target: popName
+                visible: false
+            }
+            PropertyChanges {
+                target: popNameInput
+                visible: true
+                text: popName.text
+            }
+            PropertyChanges {
+                target: popInfo
+                visible: false
+            }
+            PropertyChanges {
+                target: popInfoInput
+                visible: true
+                text: popInfo.text
             }
         }
     ]
 
     Popup {
         id: pop
-        width: 506
-        height: 319
+        width: parent.popWidth
+        height: parent.popHeight
         modal: false
         focus: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         onClosed: {
             state = ""
         }
@@ -111,6 +200,7 @@ Item {
                         height: 43
                         Label {
                             id: popName
+                            visible: true
                             anchors.fill: parent
                             color: "darkgray"
                             lineHeight: 1.1
@@ -135,6 +225,7 @@ Item {
                         height: 85
                         Label {
                             id: popInfo
+                            visible: true
                             topPadding: 5
                             anchors.fill: parent
                             color: "darkgray"
@@ -163,6 +254,7 @@ Item {
                         color: "#33000000"
                         width: parent.width
                         height: width
+                        visible: true
                         ToolButton {
                             id: exitBtn
                             anchors.fill: parent
@@ -176,12 +268,11 @@ Item {
                         color: "#33ffff00"
                         width: parent.width
                         height: width
+                        visible: true
                         ToolButton {
                             id: editBtn
                             anchors.fill: parent
                             onClicked: {
-                                popNameInput.text = popName.text
-                                popInfoInput.text = popInfo.text
                                 pop.parent.state = "edit"
                             }
                         }
@@ -196,7 +287,11 @@ Item {
                             id: cancelBtn
                             anchors.fill: parent
                             onClicked: {
-                                pop.parent.state = ""
+                                if (pop.parent.state === "new") {
+                                    pop.close()
+                                } else {
+                                    pop.parent.state = ""
+                                }
                             }
                         }
                     }

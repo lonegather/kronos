@@ -42,6 +42,12 @@ Item {
                     flat: true
                     width: parent.height
                     Layout.fillHeight: true
+                    onClicked: {
+                        assetInfo.state = "new"
+                        assetInfo.x = (gridView.width - assetInfo.popWidth) / 2
+                        assetInfo.y = (gridView.height - assetInfo.popHeight) / 2
+                        assetInfo.pop.open()
+                    }
                 }
 
                 ToolButton {
@@ -253,12 +259,16 @@ Item {
 
                     onDoubleClicked: {
                         var space = grid.anchors.margins
-                        var gx = mouse.x + wrapper.x + gridView.x + space - assetInfo.pop.width / 2
-                        var gy = mouse.y + wrapper.y + gridView.y + space - assetInfo.pop.height / 2
-                        assetInfo.pop.x = Math.min(gridView.width - space,
-                                                   Math.max(space, gx))
-                        assetInfo.pop.y = Math.min(
-                                    gridView.height - space,
+                        var gx = mouse.x + wrapper.x + gridView.x
+                                - gridView.contentX + space - assetInfo.popWidth / 2
+                        var gy = mouse.y + wrapper.y + gridView.y - gridView.contentY
+                                + space - assetInfo.popHeight / 2
+                        assetInfo.state = ""
+                        assetInfo.x = Math.min(
+                                    gridView.x + gridView.width - assetInfo.popWidth,
+                                    Math.max(space, gx))
+                        assetInfo.y = Math.min(
+                                    gridView.y + gridView.height - assetInfo.popHeight + space,
                                     Math.max(filterBar.height + space, gy))
                         assetInfo.pop.setName(name)
                         assetInfo.pop.setInfo(info)
