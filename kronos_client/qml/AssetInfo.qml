@@ -6,13 +6,16 @@ Item {
     property real popWidth: 506
     property real popHeight: 319
 
-    //state: "edit"
     states: [
         State {
             name: ""
             PropertyChanges {
                 target: pop
                 closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+            }
+            PropertyChanges {
+                target: popDetail
+                currentIndex: 0
             }
             PropertyChanges {
                 target: edit
@@ -56,6 +59,10 @@ Item {
                 closePolicy: Popup.NoAutoClose
             }
             PropertyChanges {
+                target: popDetail
+                currentIndex: 1
+            }
+            PropertyChanges {
                 target: edit
                 visible: false
             }
@@ -95,6 +102,10 @@ Item {
             PropertyChanges {
                 target: pop
                 closePolicy: Popup.NoAutoClose
+            }
+            PropertyChanges {
+                target: popDetail
+                currentIndex: 1
             }
             PropertyChanges {
                 target: edit
@@ -139,9 +150,6 @@ Item {
         height: parent.popHeight
         modal: false
         focus: true
-        onClosed: {
-            state = ""
-        }
 
         function setName(str) {
             popName.text = str
@@ -278,6 +286,17 @@ Item {
                         }
                     }
                     Rectangle {
+                        id: confirm
+                        visible: false
+                        color: "#2200ff00"
+                        width: parent.width
+                        height: width
+                        ToolButton {
+                            id: confirmBtn
+                            anchors.fill: parent
+                        }
+                    }
+                    Rectangle {
                         id: cancel
                         visible: false
                         color: "#33ff0000"
@@ -295,44 +314,42 @@ Item {
                             }
                         }
                     }
-                    Rectangle {
-                        id: confirm
-                        visible: false
-                        color: "#2200ff00"
-                        width: parent.width
-                        height: width
-                        ToolButton {
-                            id: confirmBtn
-                            anchors.fill: parent
-                        }
-                    }
                 }
             }
 
-            ListView {
-                id: pathView
+            SwipeView {
+                id: popDetail
                 width: bio.width
                 height: popBrief.height - bio.height - bio.spacing
+                orientation: Qt.Vertical
+                interactive: false
                 clip: true
-                spacing: 5
-                model: pathModel
-                flickableDirection: Flickable.AutoFlickIfNeeded
-                delegate: Item {
-                    width: parent.width
-                    height: 50
+                ListView {
+                    id: pathView
                     clip: true
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: 5
-                        color: "#33000000"
-                        Text {
+                    spacing: 5
+                    model: pathModel
+                    flickableDirection: Flickable.AutoFlickIfNeeded
+                    delegate: Item {
+                        width: parent.width
+                        height: 50
+                        clip: true
+                        Rectangle {
                             anchors.fill: parent
-                            text: pathName + ":" + pathValue
-                            color: "darkgray"
-                            font.pixelSize: 12
-                            font.family: qsTr("微软雅黑")
+                            radius: 5
+                            color: "#33000000"
+                            Text {
+                                anchors.fill: parent
+                                text: pathName + ":" + pathValue
+                                color: "darkgray"
+                                font.pixelSize: 12
+                                font.family: qsTr("微软雅黑")
+                            }
                         }
                     }
+                }
+                Rectangle {
+                    color: "#33000000"
                 }
             }
         }

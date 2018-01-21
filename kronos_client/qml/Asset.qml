@@ -17,20 +17,11 @@ Item {
 
         Rectangle {
             id: filterBar
-            radius: 10
+            radius: 3
             height: 50
             visible: false
             width: parent.width
-            gradient: Gradient {
-                GradientStop {
-                    position: 0.0
-                    color: "#2a000000"
-                }
-                GradientStop {
-                    position: 1.0
-                    color: "#00000000"
-                }
-            }
+            color: "#33000000"
 
             signal filterChanged
 
@@ -169,19 +160,14 @@ Item {
                         name: "selected"
                         PropertyChanges {
                             target: shader
-                            color: "#00b0bec5"
+                            color: "#555a5c"
                         }
                     },
                     State {
                         name: "hover"
                         PropertyChanges {
                             target: shader
-                            color: "#994a4a4a"
-                        }
-                        PropertyChanges {
-                            target: shadow
-                            color: "#99b0bec5"
-                            verticalOffset: 0
+                            color: "#4a4a4a"
                         }
                     }
                 ]
@@ -205,7 +191,7 @@ Item {
                     scale: 1.0
                     color: "#3e3e3e"
                     anchors.fill: parent
-                    anchors.margins: 8
+                    anchors.margins: 5
                 }
 
                 DropShadow {
@@ -276,10 +262,6 @@ Item {
                         assetInfo.pop.open()
                     }
                 }
-            }
-            highlight: Rectangle {
-                radius: 3
-                color: "#22b0bec5"
             }
         }
     }

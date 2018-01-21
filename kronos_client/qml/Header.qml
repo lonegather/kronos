@@ -2,43 +2,26 @@ import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.0
 
-HeaderForm {
+
+Rectangle {
     id: headerForm
     height: 50
+    color: "#363636"
 
     property string currentProject: projectCB.currentText
-    property bool available: comboEnabled
     signal projectChanged(string str)
 
     Component.onCompleted: {
-        comboEnabled = false
+        projectCB.enabled = false
         preset.get_data()
-    }
-
-    projectCB.onActivated: {
-        comboEnabled = false
-        var presetProject = JSON.parse(preset.data("project"))
-        projectLbl.text = presetProject[projectCB.currentIndex]["info"]
-        header.projectChanged(projectCB.currentText)
-    }
-
-    loginBtn.onClicked: {
-        inputDialog.open()
-    }
-
-    closeBtn.onClicked: {
-        root.close()
     }
 
     Dialog {
         id: inputDialog
-
-        x: (parent.width - width) / 2
-        y: (parent.height - height) / 2
+        x: parent.width - width
+        y: headerForm.height
         parent: ApplicationWindow.overlay
-
         focus: true
-        modal: true
         title: qsTr("登录")
         standardButtons: Dialog.Ok | Dialog.Cancel
 
@@ -66,22 +49,13 @@ HeaderForm {
     Connections {
         target: preset
         onAcquired: {
-            var presetTag = JSON.parse(preset.data("tag"))
-            var presetStage = JSON.parse(preset.data("stage"))
             var presetProject = JSON.parse(preset.data("project"))
-
             var projectModel = []
             for (var i in presetProject) {
                 projectModel[i] = presetProject[i]["name"]
             }
             projectCB.model = projectModel
             projectLbl.text = presetProject[projectCB.currentIndex]["info"]
-
-            for (i in presetStage) {
-
-
-                //console.log(presetStage[i]["name"])
-            }
 
             header.projectChanged(projectCB.currentText)
         }
@@ -94,7 +68,98 @@ HeaderForm {
     Connections {
         target: asset
         onAcquired: {
-            comboEnabled = true
+            projectCB.enabled = true
+        }
+    }
+
+    RowLayout {
+        id: rowLayout
+        anchors.fill: parent
+        spacing: 0
+
+        ComboBox {
+            id: projectCB
+            flat: true
+            enabled: false
+            font.family: qsTr("微软雅黑")
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            Layout.fillHeight: true
+            anchors.leftMargin: 5
+            onActivated: {
+                projectCB.enabled = false
+                var presetProject = JSON.parse(preset.data("project"))
+                projectLbl.text = presetProject[projectCB.currentIndex]["info"]
+                header.projectChanged(projectCB.currentText)
+            }
+        }
+
+        Rectangle {
+            color: "#00000000"
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Text {
+                id: projectLbl
+                color: "darkgray"
+                anchors.fill: parent
+                anchors.leftMargin: 20
+                anchors.rightMargin: 20
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
+                font.family: qsTr("微软雅黑")
+                font.weight: Font.Bold
+                font.pixelSize: 17
+                text: qsTr("正在连接...")
+            }
+        }
+
+        ToolButton {
+            id: loginBtn
+            text: qsTr("登录")
+            font.weight: Font.Bold
+            font.pointSize: 12
+            font.family: qsTr("微软雅黑")
+            onClicked: {
+                inputDialog.open()
+            }
+        }
+
+        Rectangle {
+            id: closeBtn
+            color: "#00000000"
+            Layout.fillHeight: true
+            Layout.minimumWidth: 50
+            states: State {
+                name: "hover"
+                PropertyChanges {
+                    target: closeBtn
+                    color: "#33ff3333"
+                }
+            }
+            transitions: Transition{
+                ColorAnimation {
+                    target: closeBtn
+                    duration: 200
+                }
+            }
+
+            Image {
+                anchors.fill: parent
+                source: "exit.png"
+            }
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: {
+                    root.close()
+                }
+                onEntered: {
+                    parent.state = "hover"
+                }
+                onExited: {
+                    parent.state = ""
+                }
+            }
         }
     }
 }
