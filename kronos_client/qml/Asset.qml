@@ -6,18 +6,16 @@ import QtQuick.Layouts 1.3
 Item {
     anchors.margins: 5
     anchors.fill: parent
-
+    property alias pop: assetInfo.pop
     signal acquired
 
     Column {
         id: grid
         anchors.fill: parent
-        anchors.margins: 10
-        spacing: 5
+        anchors.margins: 0
 
         Rectangle {
             id: filterBar
-            radius: 3
             height: 50
             visible: false
             width: parent.width
@@ -28,45 +26,63 @@ Item {
             Row {
                 anchors.fill: parent
 
+                ToolSeparator {
+                    Layout.fillHeight: true
+                }
+
                 ToolButton {
                     id: addBtn
-                    flat: true
                     width: parent.height
                     Layout.fillHeight: true
+
                     onClicked: {
                         assetInfo.state = "new"
                         assetInfo.x = (gridView.width - assetInfo.popWidth) / 2
                         assetInfo.y = (gridView.height - assetInfo.popHeight) / 2
                         assetInfo.pop.open()
                     }
+
+                    Image {
+                        anchors.fill: parent
+                        source: "add.png"
+                    }
                 }
 
                 ToolButton {
                     id: delBtn
-                    flat: true
                     width: parent.height
                     Layout.fillHeight: true
+                    onClicked: {
+
+                    }
+                    Image {
+                        anchors.fill: parent
+                        source: "del.png"
+                    }
                 }
 
                 ToolButton {
                     id: impBtn
-                    flat: true
                     width: parent.height
                     Layout.fillHeight: true
                 }
 
                 ToolButton {
                     id: synBtn
-                    flat: true
                     width: parent.height
+                    Layout.fillHeight: true
+                }
+
+                ToolSeparator {
+                    id: sep
                     Layout.fillHeight: true
                 }
 
                 ListView {
                     id: filterView
                     spacing: 10
-                    width: parent.width - filterRec.width - addBtn.width
-                           - delBtn.width - impBtn.width - synBtn.width
+                    width: parent.width - filterRec.width - addBtn.width - delBtn.width
+                           - impBtn.width - synBtn.width - sep.width * 2
                     height: parent.height
                     orientation: ListView.Horizontal
                     layoutDirection: Qt.RightToLeft
@@ -244,6 +260,7 @@ Item {
                     }
 
                     onDoubleClicked: {
+                        assetInfo.pop.close()
                         var space = grid.anchors.margins
                         var gx = mouse.x + wrapper.x + gridView.x
                                 - gridView.contentX + space - assetInfo.popWidth / 2
@@ -256,9 +273,12 @@ Item {
                         assetInfo.y = Math.min(
                                     gridView.y + gridView.height - assetInfo.popHeight + space,
                                     Math.max(filterBar.height + space, gy))
+                        assetInfo.pop.setID(entID)
+                        assetInfo.pop.setTag(tag)
                         assetInfo.pop.setName(name)
                         assetInfo.pop.setInfo(info)
                         assetInfo.pop.setPath(path)
+                        assetInfo.pop.setLink(link)
                         assetInfo.pop.open()
                     }
                 }

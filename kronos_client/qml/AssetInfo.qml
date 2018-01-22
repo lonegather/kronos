@@ -2,6 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.2
 
 Item {
+    id: popRoot
     property alias pop: pop
     property real popWidth: 506
     property real popHeight: 319
@@ -86,6 +87,7 @@ Item {
                 target: popNameInput
                 visible: true
                 text: ""
+                placeholderText: qsTr("新建资产...")
             }
             PropertyChanges {
                 target: popInfo
@@ -95,6 +97,7 @@ Item {
                 target: popInfoInput
                 visible: true
                 text: ""
+                placeholderText: qsTr("资产描述...")
             }
         },
         State {
@@ -131,6 +134,7 @@ Item {
                 target: popNameInput
                 visible: true
                 text: popName.text
+                placeholderText: popName.text
             }
             PropertyChanges {
                 target: popInfo
@@ -140,6 +144,7 @@ Item {
                 target: popInfoInput
                 visible: true
                 text: popInfo.text
+                placeholderText: popInfo.text
             }
         }
     ]
@@ -150,6 +155,16 @@ Item {
         height: parent.popHeight
         modal: false
         focus: true
+
+        property string identity: ""
+
+        function setID(str) {
+            identity = str
+        }
+
+        function setTag(str) {
+            tagCombo.tag = str
+        }
 
         function setName(str) {
             popName.text = str
@@ -178,6 +193,29 @@ Item {
                                      pathValue: pathDic[i]
                                  })
             }
+        }
+
+        function setLink(str) {
+            var presetBatch = JSON.parse(preset.data("batch"))
+            linkModel.clear()
+            for (var i in presetBatch) {
+                if (presetBatch[i]["project"] === header.currentProject) {
+                    var currentLink = JSON.parse(str)
+                    var hasConnection = false
+                    for (var l in currentLink) {
+                        if (currentLink[l] === presetBatch[i]["id"]) {
+                            hasConnection = true
+                        }
+                    }
+
+                    linkModel.append({
+                                         linkID: presetBatch[i]["id"],
+                                         linkName: presetBatch[i]["name"],
+                                         linkExists: hasConnection
+                                     })
+                }
+            }
+            linkView.model = linkModel
         }
 
         ListModel {
@@ -294,6 +332,32 @@ Item {
                         ToolButton {
                             id: confirmBtn
                             anchors.fill: parent
+                            onClicked: {
+                                var form = JSON.parse("{}")
+
+                                if (popRoot.state === "edit") {
+                                    form["id"] = pop.identity
+                                }
+                                form["project"] = header.currentProjectID
+                                form["name"] = popNameInput.text
+                                form["info"] = popInfoInput.text
+                                form["tag"] = tagModel.get(
+                                            tagCombo.currentIndex)["name"]
+                                form["link"] = []
+                                for (var i = 0; i < linkModel.count; i++) {
+                                    var item = linkModel.get(i)
+                                    if (item["linkExists"]) {
+                                        form["link"].push(item["linkID"])
+                                    }
+                                }
+
+                                busy.visible = true
+                                filterBar.visible = false
+                                filterLink.currentIndex = 0
+                                gridView.model = []
+                                pop.close()
+                                entityModel.set_asset(JSON.stringify(form))
+                            }
                         }
                     }
                     Rectangle {
@@ -336,7 +400,7 @@ Item {
                         clip: true
                         Rectangle {
                             anchors.fill: parent
-                            radius: 5
+                            radius: 3
                             color: "#33000000"
                             Text {
                                 anchors.fill: parent
@@ -349,7 +413,123 @@ Item {
                     }
                 }
                 Rectangle {
+                    radius: 3
                     color: "#33000000"
+                    Column {
+                        anchors.fill: parent
+                        anchors.leftMargin: 5
+                        anchors.rightMargin: 5
+                        Row {
+                            id: labelRow
+                            width: parent.width
+                            height: 40
+                            Rectangle {
+                                id: linkLabelRec
+                                color: "#00ffffff"
+                                width: parent.width - tagLabelRec.width - tagComboRec.width
+                                height: parent.height
+                                Label {
+                                    anchors.fill: parent
+                                    text: qsTr("链接：")
+                                    font.pointSize: 12
+                                    font.family: qsTr("微软雅黑")
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+
+                            Rectangle {
+                                id: tagLabelRec
+                                width: 100
+                                height: parent.height
+                                color: linkLabelRec.color
+                                Label {
+                                    anchors.fill: parent
+                                    text: qsTr("资产类型：")
+                                    font.pointSize: 12
+                                    font.family: qsTr("微软雅黑")
+                                    horizontalAlignment: Text.AlignRight
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+                            Rectangle {
+                                id: tagComboRec
+                                width: 100
+                                height: parent.height
+                                color: linkLabelRec.color
+                                ListModel {
+                                    id: tagModel
+                                }
+
+                                ComboBox {
+                                    id: tagCombo
+                                    font.family: qsTr("微软雅黑")
+                                    anchors.fill: parent
+                                    property string tag: ""
+                                }
+                            }
+                        }
+
+                        ListModel {
+                            id: linkModel
+                        }
+
+                        GridView {
+                            id: linkView
+                            width: parent.width
+                            height: parent.height - labelRow.height
+                            delegate: Rectangle {
+                                color: "#33000000"
+                                width: 80
+                                height: 35
+                                CheckBox {
+                                    id: linkCheck
+                                    font.pointSize: 10
+                                    font.family: qsTr("微软雅黑")
+                                    anchors.fill: parent
+                                    text: linkName
+                                    checked: linkExists
+                                    onToggled: {
+                                        linkExists = checked
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Connections {
+                    target: header
+                    onProjectChanged: {
+                        var presetTag = JSON.parse(preset.data("tag"))
+                        tagModel.clear()
+                        for (var i in presetTag) {
+                            if (presetTag[i]["genus"] === "asset") {
+                                tagModel.append({
+                                                    name: presetTag[i]["name"],
+                                                    modelData: presetTag[i]["info"]
+                                                })
+                            }
+                        }
+                        tagCombo.model = tagModel
+                    }
+                }
+
+                Connections {
+                    target: popRoot
+                    onStateChanged: {
+                        if (state === "new") {
+                            tagCombo.currentIndex = 0
+                            pop.setLink("[]")
+                        } else if (state === "edit") {
+                            popNameInput.placeholderText = popName.text
+                            popInfoInput.placeholderText = popInfo.text
+                            for (var i = 0; i < tagModel.count; i++) {
+                                if (tagModel.get(i)["name"] === tagCombo.tag) {
+                                    tagCombo.currentIndex = i
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

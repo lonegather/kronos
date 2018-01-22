@@ -139,6 +139,31 @@ class Entity(models.Model):
                            'tag': ent.tag.name, 'tag_info': ent.tag.info,
                            })
         return result
+
+    @classmethod
+    def set(cls, form):
+        ent_id = form.get('id', [None])[0]
+        tag = Tag.objects.get(name=form['tag'][0])
+        if ent_id:
+            ent = Entity.objects.get(id=ent_id)
+            ent.name = form['name'][0]
+            ent.info = form['info'][0]
+            ent.url = ent.name
+            ent.tag = tag
+            ent.link.clear()
+            for link_id in form.get('link', []):
+                link = Entity.objects.get(id=link_id)
+                ent.link.add(link)
+        else:
+            prj = Project.objects.get(id=form['project'][0])
+            ent = Entity(project=prj, tag=tag,
+                         name=form['name'][0], info=form['info'][0],
+                         url=form['name'][0])
+            ent.save()
+            for link_id in form.get('link', []):
+                link = Entity.objects.get(id=link_id)
+                ent.link.add(link)
+        ent.save()
     
     def genus(self):
         return self.tag.genus

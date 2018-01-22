@@ -1,15 +1,17 @@
 ﻿# -*- coding: utf-8 -*-
 import json
 from PyQt5.QtCore import QAbstractListModel, Qt, QModelIndex, pyqtSignal, pyqtSlot, QThread, QByteArray
-from . import request
+from . import request, commit
 
 
 class EntityModel(QAbstractListModel):
 
-    NameRole = Qt.UserRole + 1
-    TagRole = Qt.UserRole + 2
-    InfoRole = Qt.UserRole + 3
-    PathRole = Qt.UserRole + 4
+    IDRole = Qt.UserRole + 1
+    NameRole = Qt.UserRole + 2
+    TagRole = Qt.UserRole + 3
+    InfoRole = Qt.UserRole + 4
+    LinkRole = Qt.UserRole + 5
+    PathRole = Qt.UserRole + 6
 
     def __init__(self, *args):
         super(EntityModel, self).__init__()
@@ -18,13 +20,17 @@ class EntityModel(QAbstractListModel):
         self.__filter = {}
         self.__link = []
         self.__link_current = ''
-        self.request = None
+        self.__project = ''
+        self.__genus = ''
+        self.thread = None
 
     @pyqtSlot(list)
     def update(self, filters):
-        self.request = RequestThread(filters)
-        self.request.acquired.connect(self.on_acquired)
-        self.request.start()
+        self.__project = filters[1]
+        self.__genus = filters[3]
+        self.thread = RequestThread(filters)
+        self.thread.acquired.connect(self.on_acquired)
+        self.thread.start()
 
     @pyqtSlot(result=list)
     def filters(self):
@@ -51,6 +57,18 @@ class EntityModel(QAbstractListModel):
         self.__link_current = l
         self.__link = json.loads(batch)
         self.update_filter()
+
+    @pyqtSlot(str)
+    def set_asset(self, form):
+        self.thread = CommitThread(form)
+        self.thread.finished.connect(self.on_finished)
+        self.thread.start()
+
+    def on_finished(self):
+        self.update(['project', self.__project, 'genus', self.__genus])
+
+    def on_failed(self):
+        self.dataChanged.emit(QModelIndex(), QModelIndex())
 
     def update_filter(self):
         self.__entity_filtered = []
@@ -83,18 +101,24 @@ class EntityModel(QAbstractListModel):
     def data(self, index, role=Qt.DisplayRole):
         if role in [Qt.DisplayRole, self.NameRole]:
             return self.__entity_filtered[index.row()]['name']
+        elif role == self.IDRole:
+            return self.__entity_filtered[index.row()]['id']
         elif role == self.TagRole:
             return self.__entity_filtered[index.row()]['tag']
         elif role == self.InfoRole:
             return self.__entity_filtered[index.row()]['info']
+        elif role == self.LinkRole:
+            return json.dumps(self.__entity_filtered[index.row()]['link'])
         elif role == self.PathRole:
             return json.dumps(self.__entity_filtered[index.row()]['path'])
 
     def roleNames(self):
         role_names = super(EntityModel, self).roleNames()
+        role_names[self.IDRole] = QByteArray(b'entID')
         role_names[self.NameRole] = QByteArray(b'name')
         role_names[self.TagRole] = QByteArray(b'tag')
         role_names[self.InfoRole] = QByteArray(b'info')
+        role_names[self.LinkRole] = QByteArray(b'link')
         role_names[self.PathRole] = QByteArray(b'path')
         return role_names
 
@@ -111,3 +135,19 @@ class RequestThread(QThread):
 
     def run(self):
         self.acquired.emit(request('entity', **self.filters))
+
+
+class CommitThread(QThread):
+
+    finished = pyqtSignal()
+    failed = pyqtSignal()
+
+    def __init__(self, form):
+        super(CommitThread, self).__init__()
+        self.form = json.loads(form)
+
+    def run(self):
+        if commit('entity', **self.form):
+            self.finished.emit()
+        else:
+            self.failed.emit()

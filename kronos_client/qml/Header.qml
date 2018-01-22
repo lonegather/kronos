@@ -2,14 +2,18 @@ import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.0
 
-
 Rectangle {
     id: headerForm
     height: 50
     color: "#363636"
 
+    property string currentProjectID: ""
     property string currentProject: projectCB.currentText
     signal projectChanged(string str)
+
+    function refresh() {
+        projectChanged(projectCB.currentText)
+    }
 
     Component.onCompleted: {
         projectCB.enabled = false
@@ -56,7 +60,7 @@ Rectangle {
             }
             projectCB.model = projectModel
             projectLbl.text = presetProject[projectCB.currentIndex]["info"]
-
+            currentProjectID = presetProject[projectCB.currentIndex]["id"]
             header.projectChanged(projectCB.currentText)
         }
         onFailed: {
@@ -90,6 +94,7 @@ Rectangle {
                 projectCB.enabled = false
                 var presetProject = JSON.parse(preset.data("project"))
                 projectLbl.text = presetProject[projectCB.currentIndex]["info"]
+                currentProjectID = presetProject[projectCB.currentIndex]["id"]
                 header.projectChanged(projectCB.currentText)
             }
         }
@@ -136,7 +141,7 @@ Rectangle {
                     color: "#33ff3333"
                 }
             }
-            transitions: Transition{
+            transitions: Transition {
                 ColorAnimation {
                     target: closeBtn
                     duration: 200

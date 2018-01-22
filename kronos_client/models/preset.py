@@ -8,7 +8,7 @@ class Preset(QObject):
 
     def __init__(self):
         super(Preset, self).__init__()
-        self.preset_list = []
+        self.preset_list = {}
         self.request = None
 
     acquired = pyqtSignal()
@@ -16,7 +16,7 @@ class Preset(QObject):
 
     @pyqtSlot(str, result=str)
     def data(self, table):
-        return json.dumps(self.preset_list[table])
+        return json.dumps(self.preset_list.get(table, []))
 
     @pyqtSlot()
     def get_data(self, force=False):
