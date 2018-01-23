@@ -62,10 +62,11 @@ Rectangle {
             projectLbl.text = presetProject[projectCB.currentIndex]["info"]
             currentProjectID = presetProject[projectCB.currentIndex]["id"]
             header.projectChanged(projectCB.currentText)
+            headerForm.color = "#363636"
         }
         onFailed: {
             projectLbl.text = message
-            background = "#cc3333"
+            headerForm.color = "#cc3333"
         }
     }
 

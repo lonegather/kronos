@@ -99,6 +99,10 @@ Item {
                 text: ""
                 placeholderText: qsTr("资产描述...")
             }
+            PropertyChanges {
+                target: tagCombo
+                currentIndex: -1
+            }
         },
         State {
             name: "edit"
@@ -297,13 +301,17 @@ Item {
                     height: parent.height
                     Rectangle {
                         id: exit
-                        color: "#33000000"
+                        color: "#00000000"
                         width: parent.width
                         height: width
                         visible: true
                         ToolButton {
                             id: exitBtn
                             anchors.fill: parent
+                            Image {
+                                anchors.fill: parent
+                                source: "exit.png"
+                            }
                             onClicked: {
                                 pop.close()
                             }
@@ -311,13 +319,17 @@ Item {
                     }
                     Rectangle {
                         id: edit
-                        color: "#33ffff00"
+                        color: "#00000000"
                         width: parent.width
                         height: width
                         visible: true
                         ToolButton {
                             id: editBtn
                             anchors.fill: parent
+                            Image {
+                                anchors.fill: parent
+                                source: "edit.png"
+                            }
                             onClicked: {
                                 pop.parent.state = "edit"
                             }
@@ -326,12 +338,16 @@ Item {
                     Rectangle {
                         id: confirm
                         visible: false
-                        color: "#2200ff00"
+                        color: "#00000000"
                         width: parent.width
                         height: width
                         ToolButton {
                             id: confirmBtn
                             anchors.fill: parent
+                            Image {
+                                anchors.fill: parent
+                                source: "confirm.png"
+                            }
                             onClicked: {
                                 var form = JSON.parse("{}")
 
@@ -363,12 +379,16 @@ Item {
                     Rectangle {
                         id: cancel
                         visible: false
-                        color: "#33ff0000"
+                        color: "#00000000"
                         width: parent.width
                         height: width
                         ToolButton {
                             id: cancelBtn
                             anchors.fill: parent
+                            Image {
+                                anchors.fill: parent
+                                source: "cancel.png"
+                            }
                             onClicked: {
                                 if (pop.parent.state === "new") {
                                     pop.close()

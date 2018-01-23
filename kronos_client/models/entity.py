@@ -12,6 +12,7 @@ class EntityModel(QAbstractListModel):
     InfoRole = Qt.UserRole + 4
     LinkRole = Qt.UserRole + 5
     PathRole = Qt.UserRole + 6
+    ThumbRole = Qt.UserRole + 7
 
     def __init__(self, *args):
         super(EntityModel, self).__init__()
@@ -111,6 +112,8 @@ class EntityModel(QAbstractListModel):
             return json.dumps(self.__entity_filtered[index.row()]['link'])
         elif role == self.PathRole:
             return json.dumps(self.__entity_filtered[index.row()]['path'])
+        elif role == self.ThumbRole:
+            return self.__entity_filtered[index.row()]['thumb']
 
     def roleNames(self):
         role_names = super(EntityModel, self).roleNames()
@@ -120,6 +123,7 @@ class EntityModel(QAbstractListModel):
         role_names[self.InfoRole] = QByteArray(b'info')
         role_names[self.LinkRole] = QByteArray(b'link')
         role_names[self.PathRole] = QByteArray(b'path')
+        role_names[self.ThumbRole] = QByteArray(b'thumb')
         return role_names
 
 

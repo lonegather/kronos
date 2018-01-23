@@ -96,6 +96,7 @@ class Entity(models.Model):
     name = models.CharField(max_length=100)
     info = models.CharField(max_length=200, blank=True)
     url = models.CharField(max_length=200, blank=True)
+    thumb = models.ImageField(upload_to="thumbs", default="thumbs/default.png")
 
     @classmethod
     def get(cls, **kwargs):
@@ -121,7 +122,7 @@ class Entity(models.Model):
                            'name': ent.name, 'info': ent.info,
                            'genus': ent.tag.genus.name, 'genus_info': ent.tag.genus.info,
                            'tag': ent.tag.name, 'tag_info': ent.tag.info,
-                           'link': link, 'path': ent.path(),
+                           'link': link, 'path': ent.path(), 'thumb': ent.thumb.url,
                            })
         return result
 

@@ -16,7 +16,7 @@ Item {
 
         Rectangle {
             id: filterBar
-            height: 50
+            height: 40
             visible: false
             width: parent.width
             color: "#33000000"
@@ -27,13 +27,13 @@ Item {
                 anchors.fill: parent
 
                 ToolSeparator {
-                    Layout.fillHeight: true
+                    height: parent.height
                 }
 
                 ToolButton {
                     id: addBtn
                     width: parent.height
-                    Layout.fillHeight: true
+                    height: parent.height
 
                     onClicked: {
                         assetInfo.state = "new"
@@ -51,7 +51,7 @@ Item {
                 ToolButton {
                     id: delBtn
                     width: parent.height
-                    Layout.fillHeight: true
+                    height: parent.height
                     onClicked: {
 
                     }
@@ -64,25 +64,25 @@ Item {
                 ToolButton {
                     id: impBtn
                     width: parent.height
-                    Layout.fillHeight: true
+                    height: parent.height
                 }
 
                 ToolButton {
                     id: synBtn
                     width: parent.height
-                    Layout.fillHeight: true
+                    height: parent.height
                 }
 
                 ToolSeparator {
                     id: sep
-                    Layout.fillHeight: true
+                    height: parent.height
                 }
 
                 ListView {
                     id: filterView
                     spacing: 10
                     width: parent.width - filterRec.width - addBtn.width - delBtn.width
-                           - impBtn.width - synBtn.width - sep.width * 2
+                           - impBtn.width - synBtn.width - sep.width * 3
                     height: parent.height
                     orientation: ListView.Horizontal
                     layoutDirection: Qt.RightToLeft
@@ -93,10 +93,7 @@ Item {
                         CheckBox {
                             checked: true
                             anchors.fill: parent
-                            anchors.leftMargin: 5
-                            anchors.rightMargin: 5
                             text: modelData
-                            font.weight: Font.Bold
                             font.pointSize: 12
                             font.family: qsTr("微软雅黑")
                             onToggled: {
@@ -113,16 +110,13 @@ Item {
 
                 Rectangle {
                     id: filterRec
-                    width: 120
+                    width: 100
                     height: parent.height
                     color: "#00000000"
                     ComboBox {
                         id: filterLink
                         font.family: qsTr("微软雅黑")
                         anchors.fill: parent
-                        anchors.topMargin: 5
-                        anchors.bottomMargin: 5
-                        anchors.rightMargin: 10
                         onActivated: {
                             gridView.model = []
                             var presetBatch = JSON.parse(preset.data("batch"))
@@ -137,6 +131,10 @@ Item {
                                                  JSON.stringify(batch))
                         }
                     }
+                }
+
+                ToolSeparator {
+                    height: parent.height
                 }
 
                 Connections {
@@ -163,9 +161,12 @@ Item {
             focus: true
             height: parent.height - parent.spacing - filterBar.height
             width: parent.width
-            cellWidth: 158
+            cellWidth: 158.5
             cellHeight: 183
             flickableDirection: Flickable.AutoFlickIfNeeded
+
+            property int concurrent: 0
+
             delegate: Item {
                 id: wrapper
                 width: gridView.cellWidth
@@ -222,14 +223,52 @@ Item {
 
                 Column {
                     id: column
-                    anchors.margins: 15
+                    anchors.margins: 15.5
                     anchors.fill: parent
                     spacing: 5
                     Rectangle {
                         width: 128
                         height: 128
                         scale: shader.scale
-                        color: "darkgray"
+                        color: "#00000000"
+                        BusyIndicator {
+                            id: bi
+                            anchors.centerIn: parent
+                        }
+
+                        Timer {
+                            id: timer
+                            interval: 100
+                            triggeredOnStart: true
+                            onTriggered: {
+                                if (gridView.concurrent > 0) {
+                                    if (img.status !== Image.Loading) {
+                                        gridView.concurrent -= 1
+                                    }
+                                    img.source = ""
+                                    img.source = preset.host() + thumb
+                                }
+                                timer.restart()
+                            }
+                        }
+
+                        Image {
+                            id: img
+                            anchors.fill: parent
+                            sourceSize.width: 128
+                            sourceSize.height: 128
+                            onStatusChanged: {
+                                if (img.status === Image.Ready) {
+                                    gridView.concurrent += 1
+                                    bi.visible = false
+                                    timer.stop()
+                                }
+                            }
+
+                            Component.onCompleted: {
+                                timer.start()
+                            }
+                        }
                     }
                     Text {
                         id: label
@@ -313,6 +352,7 @@ Item {
         onDataChanged: {
             busy.visible = false
             filterBar.visible = true
+            gridView.concurrent = 1
             gridView.model = entityModel
             acquired()
         }

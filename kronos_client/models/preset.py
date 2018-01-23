@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 import json
-from . import request
+from . import host, request
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QThread
 
 
@@ -13,6 +13,10 @@ class Preset(QObject):
 
     acquired = pyqtSignal()
     failed = pyqtSignal(str, arguments=['message'])
+
+    @pyqtSlot(result=str)
+    def host(self):
+        return host
 
     @pyqtSlot(str, result=str)
     def data(self, table):
@@ -43,4 +47,5 @@ class RequestThread(QThread):
         super(RequestThread, self).__init__()
 
     def run(self):
-        self.acquired.emit(request('preset'))
+        result = request('preset')
+        self.acquired.emit(result if result else {})

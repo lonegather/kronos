@@ -6,6 +6,7 @@ from . import models
 
 # Register your models here.
 
+
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
     
@@ -39,7 +40,7 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(models.Entity)
 class EntityAdmin(admin.ModelAdmin):
     
-    list_display = ('name', 'info', 'tag', 'genus', 'path')
+    list_display = ('name', 'info', 'tag', 'genus', 'path', 'thumb')
     list_filter = ('project', 'tag')
     ordering = ('name', )
     search_fields = ('name', )
