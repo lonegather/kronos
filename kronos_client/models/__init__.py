@@ -4,7 +4,7 @@ import requests
 from requests.exceptions import ConnectionError
 
 host = "http://localhost:8000"
-# address = "http://10.1.21.252:8880/api"
+# host = "http://10.1.21.252:8880"
 
 
 def request(table, **filters):

@@ -238,7 +238,7 @@ Item {
 
                         Timer {
                             id: timer
-                            interval: 100
+                            interval: 1000
                             triggeredOnStart: true
                             onTriggered: {
                                 if (gridView.concurrent > 0) {
@@ -318,6 +318,7 @@ Item {
                         assetInfo.pop.setInfo(info)
                         assetInfo.pop.setPath(path)
                         assetInfo.pop.setLink(link)
+                        assetInfo.pop.setThumb(preset.host() + thumb)
                         assetInfo.pop.open()
                     }
                 }
@@ -352,7 +353,7 @@ Item {
         onDataChanged: {
             busy.visible = false
             filterBar.visible = true
-            gridView.concurrent = 1
+            gridView.concurrent = 10
             gridView.model = entityModel
             acquired()
         }

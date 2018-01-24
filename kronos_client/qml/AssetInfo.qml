@@ -52,6 +52,10 @@ Item {
                 visible: false
                 text: ""
             }
+            PropertyChanges {
+                target: thumbBtn
+                state: ""
+            }
         },
         State {
             name: "new"
@@ -102,6 +106,11 @@ Item {
             PropertyChanges {
                 target: tagCombo
                 currentIndex: -1
+            }
+            PropertyChanges {
+                target: thumb
+                source: preset.host() + "/media/thumbs/default.png"
+                origin: preset.host() + "/media/thumbs/default.png"
             }
         },
         State {
@@ -222,6 +231,11 @@ Item {
             linkView.model = linkModel
         }
 
+        function setThumb(str) {
+            thumb.origin = str
+            thumb.source = str
+        }
+
         ListModel {
             id: pathModel
         }
@@ -230,16 +244,33 @@ Item {
             id: popBrief
             anchors.margins: 5
             anchors.fill: parent
-            spacing: anchors.margins + 5
             Row {
                 id: bio
                 spacing: 10
                 width: parent.width
                 height: 128
                 Rectangle {
-                    color: "grey"
+                    color: "#00000000"
                     width: height
                     height: parent.height
+
+                    Timer {
+                        id: thumbTimer
+                        interval: 100
+                        onTriggered: {
+                            thumb.source = "image://screen/a"
+                            thumb.source = "image://screen/b"
+                            restart()
+                        }
+                    }
+
+                    Image {
+                        id: thumb
+                        anchors.fill: parent
+                        sourceSize.width: 128
+                        sourceSize.height: 128
+                        property string origin: ""
+                    }
                 }
                 Column {
                     width: bio.width - option.width - bio.spacing * 2 - 128
@@ -314,6 +345,8 @@ Item {
                             }
                             onClicked: {
                                 pop.close()
+                                thumbTimer.stop()
+                                thumb.cache = true
                             }
                         }
                     }
@@ -371,6 +404,8 @@ Item {
                                 filterBar.visible = false
                                 filterLink.currentIndex = 0
                                 gridView.model = []
+                                thumb.source = "image://screen/save:" + popNameInput.text
+                                thumb.source = thumb.origin
                                 pop.close()
                                 entityModel.set_asset(JSON.stringify(form))
                             }
@@ -404,7 +439,7 @@ Item {
             SwipeView {
                 id: popDetail
                 width: bio.width
-                height: popBrief.height - bio.height - bio.spacing
+                height: popBrief.height - bio.height
                 orientation: Qt.Vertical
                 interactive: false
                 clip: true
@@ -434,27 +469,74 @@ Item {
                 }
                 Rectangle {
                     radius: 3
-                    color: "#33000000"
+                    color: "#00000000"
                     Column {
                         anchors.fill: parent
-                        anchors.leftMargin: 5
-                        anchors.rightMargin: 5
                         Row {
                             id: labelRow
                             width: parent.width
                             height: 40
                             Rectangle {
                                 id: linkLabelRec
-                                color: "#00ffffff"
-                                width: parent.width - tagLabelRec.width - tagComboRec.width
+                                color: "#00000000"
+                                width: 128
                                 height: parent.height
-                                Label {
+                                Button {
+                                    id: thumbBtn
                                     anchors.fill: parent
-                                    text: qsTr("链接：")
+                                    text: qsTr("修改缩略图")
                                     font.pointSize: 12
                                     font.family: qsTr("微软雅黑")
-                                    verticalAlignment: Text.AlignVCenter
+                                    states: [
+                                        State {
+                                            name: ""
+                                            PropertyChanges {
+                                                target: thumbBtn
+                                                text: qsTr("修改缩略图")
+                                            }
+                                        },
+
+                                        State {
+                                            name: "restore"
+                                            PropertyChanges {
+                                                target: thumbBtn
+                                                text: qsTr("还原")
+                                            }
+                                        }
+                                    ]
+                                    onStateChanged: {
+                                        if (state === "") {
+                                            thumbTimer.stop()
+                                            thumb.cache = true
+                                            thumb.source = thumb.origin
+                                        } else {
+                                            thumb.source = "image://screen/"
+                                            thumb.cache = false
+                                            thumbTimer.start()
+                                        }
+                                    }
+                                    onClicked: {
+                                        if (state === "") {
+                                            thumb.source = "image://screen/"
+                                            thumb.cache = false
+                                            thumbTimer.start()
+                                            state = "restore"
+                                        } else {
+                                            thumbTimer.stop()
+                                            thumb.cache = true
+                                            thumb.source = thumb.origin
+                                            state = ""
+                                        }
+                                    }
                                 }
+                            }
+
+                            Rectangle {
+                                id: spacerRec
+                                color: "#00000000"
+                                width: parent.width - tagLabelRec.width
+                                       - tagComboRec.width - linkLabelRec.width - 3
+                                height: parent.height
                             }
 
                             Rectangle {
@@ -493,23 +575,27 @@ Item {
                             id: linkModel
                         }
 
-                        GridView {
-                            id: linkView
+                        Rectangle {
+                            color: "#33000000"
                             width: parent.width
                             height: parent.height - labelRow.height
-                            delegate: Rectangle {
-                                color: "#33000000"
-                                width: 80
-                                height: 35
-                                CheckBox {
-                                    id: linkCheck
-                                    font.pointSize: 10
-                                    font.family: qsTr("微软雅黑")
-                                    anchors.fill: parent
-                                    text: linkName
-                                    checked: linkExists
-                                    onToggled: {
-                                        linkExists = checked
+                            GridView {
+                                id: linkView
+                                anchors.fill: parent
+                                delegate: Rectangle {
+                                    color: "#00000000"
+                                    width: 80
+                                    height: 35
+                                    CheckBox {
+                                        id: linkCheck
+                                        font.pointSize: 10
+                                        font.family: qsTr("微软雅黑")
+                                        anchors.fill: parent
+                                        text: linkName
+                                        checked: linkExists
+                                        onToggled: {
+                                            linkExists = checked
+                                        }
                                     }
                                 }
                             }
