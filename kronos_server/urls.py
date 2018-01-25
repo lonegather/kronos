@@ -25,5 +25,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^([^/]+).html$', views.front, name='front'),
     url(r'^admin/', admin.site.urls),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

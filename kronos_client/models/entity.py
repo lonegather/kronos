@@ -14,7 +14,7 @@ class EntityModel(QAbstractListModel):
     PathRole = Qt.UserRole + 6
     ThumbRole = Qt.UserRole + 7
 
-    def __init__(self, *args):
+    def __init__(self, engine):
         super(EntityModel, self).__init__()
         self.__entity = []
         self.__entity_filtered = []
@@ -24,6 +24,8 @@ class EntityModel(QAbstractListModel):
         self.__project = ''
         self.__genus = ''
         self.thread = None
+
+        engine.rootContext().setContextProperty("entityModel", self)
 
     @pyqtSlot(list)
     def update(self, filters):
@@ -117,13 +119,13 @@ class EntityModel(QAbstractListModel):
 
     def roleNames(self):
         role_names = super(EntityModel, self).roleNames()
-        role_names[self.IDRole] = QByteArray(b'entID')
-        role_names[self.NameRole] = QByteArray(b'name')
-        role_names[self.TagRole] = QByteArray(b'tag')
-        role_names[self.InfoRole] = QByteArray(b'info')
-        role_names[self.LinkRole] = QByteArray(b'link')
-        role_names[self.PathRole] = QByteArray(b'path')
-        role_names[self.ThumbRole] = QByteArray(b'thumb')
+        role_names[self.IDRole] = b'entID'
+        role_names[self.NameRole] = b'name'
+        role_names[self.TagRole] = b'tag'
+        role_names[self.InfoRole] = b'info'
+        role_names[self.LinkRole] = b'link'
+        role_names[self.PathRole] = b'path'
+        role_names[self.ThumbRole] = b'thumb'
         return role_names
 
 
@@ -149,6 +151,9 @@ class CommitThread(QThread):
     def __init__(self, form):
         super(CommitThread, self).__init__()
         self.form = json.loads(form)
+        if 'file' in self.form:
+            file_path = self.form['file']
+            self.form['file'] = {"thumb": open(file_path, 'rb')}
 
     def run(self):
         if commit('entity', **self.form):

@@ -6,10 +6,12 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QThread
 
 class Preset(QObject):
 
-    def __init__(self):
+    def __init__(self, engine):
         super(Preset, self).__init__()
         self.preset_list = {}
         self.request = None
+
+        engine.rootContext().setContextProperty("preset", self)
 
     acquired = pyqtSignal()
     failed = pyqtSignal(str, arguments=['message'])

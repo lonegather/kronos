@@ -145,6 +145,7 @@ class Entity(models.Model):
     def set(cls, form):
         ent_id = form.get('id', [None])[0]
         tag = Tag.objects.get(name=form['tag'][0])
+
         if ent_id:
             ent = Entity.objects.get(id=ent_id)
             ent.name = form['name'][0]
@@ -164,6 +165,10 @@ class Entity(models.Model):
             for link_id in form.get('link', []):
                 link = Entity.objects.get(id=link_id)
                 ent.link.add(link)
+
+        if 'thumb' in form:
+            ent.thumb = form['thumb']
+
         ent.save()
     
     def genus(self):

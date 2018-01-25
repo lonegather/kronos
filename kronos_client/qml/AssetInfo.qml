@@ -7,6 +7,21 @@ Item {
     property real popWidth: 506
     property real popHeight: 319
 
+    onStateChanged: {
+        if (state === "new") {
+            tagCombo.currentIndex = 0
+            pop.setLink("[]")
+        } else if (state === "edit") {
+            popNameInput.placeholderText = popName.text
+            popInfoInput.placeholderText = popInfo.text
+            for (var i = 0; i < tagModel.count; i++) {
+                if (tagModel.get(i)["name"] === tagCombo.tag) {
+                    tagCombo.currentIndex = i
+                }
+            }
+        }
+    }
+
     states: [
         State {
             name: ""
@@ -168,6 +183,9 @@ Item {
         height: parent.popHeight
         modal: false
         focus: true
+        onClosed: {
+
+        }
 
         property string identity: ""
 
@@ -254,16 +272,6 @@ Item {
                     width: height
                     height: parent.height
 
-                    Timer {
-                        id: thumbTimer
-                        interval: 100
-                        onTriggered: {
-                            thumb.source = "image://screen/a"
-                            thumb.source = "image://screen/b"
-                            restart()
-                        }
-                    }
-
                     Image {
                         id: thumb
                         anchors.fill: parent
@@ -345,8 +353,6 @@ Item {
                             }
                             onClicked: {
                                 pop.close()
-                                thumbTimer.stop()
-                                thumb.cache = true
                             }
                         }
                     }
@@ -399,13 +405,14 @@ Item {
                                         form["link"].push(item["linkID"])
                                     }
                                 }
+                                if (thumbBtn.state === "restore") {
+                                    form["file"] = screenshot.file(popNameInput.text)
+                                }
 
                                 busy.visible = true
                                 filterBar.visible = false
                                 filterLink.currentIndex = 0
                                 gridView.model = []
-                                thumb.source = "image://screen/save:" + popNameInput.text
-                                thumb.source = thumb.origin
                                 pop.close()
                                 entityModel.set_asset(JSON.stringify(form))
                             }
@@ -425,6 +432,8 @@ Item {
                                 source: "cancel.png"
                             }
                             onClicked: {
+                                thumb.cache = true
+                                thumb.source = thumb.origin
                                 if (pop.parent.state === "new") {
                                     pop.close()
                                 } else {
@@ -443,26 +452,32 @@ Item {
                 orientation: Qt.Vertical
                 interactive: false
                 clip: true
-                ListView {
-                    id: pathView
-                    clip: true
-                    spacing: 5
-                    model: pathModel
-                    flickableDirection: Flickable.AutoFlickIfNeeded
-                    delegate: Item {
-                        width: parent.width
-                        height: 50
+                Rectangle {
+                    color: "#00000000"
+                    //anchors.topMargin: 5
+                    ListView {
+                        id: pathView
                         clip: true
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: 3
-                            color: "#33000000"
-                            Text {
+                        spacing: 5
+                        anchors.fill: parent
+                        anchors.topMargin: 5
+                        model: pathModel
+                        flickableDirection: Flickable.AutoFlickIfNeeded
+                        delegate: Item {
+                            width: parent.width
+                            height: 50
+                            clip: true
+                            Rectangle {
                                 anchors.fill: parent
-                                text: pathName + ":" + pathValue
-                                color: "darkgray"
-                                font.pixelSize: 12
-                                font.family: qsTr("微软雅黑")
+                                radius: 3
+                                color: "#33000000"
+                                Text {
+                                    anchors.fill: parent
+                                    text: pathName + ":" + pathValue
+                                    color: "darkgray"
+                                    font.pixelSize: 12
+                                    font.family: qsTr("微软雅黑")
+                                }
                             }
                         }
                     }
@@ -506,27 +521,16 @@ Item {
                                     ]
                                     onStateChanged: {
                                         if (state === "") {
-                                            thumbTimer.stop()
                                             thumb.cache = true
                                             thumb.source = thumb.origin
                                         } else {
-                                            thumb.source = "image://screen/"
+                                            screenshot.clear()
                                             thumb.cache = false
-                                            thumbTimer.start()
+                                            thumb.source = "image://screenshot/"
                                         }
                                     }
                                     onClicked: {
-                                        if (state === "") {
-                                            thumb.source = "image://screen/"
-                                            thumb.cache = false
-                                            thumbTimer.start()
-                                            state = "restore"
-                                        } else {
-                                            thumbTimer.stop()
-                                            thumb.cache = true
-                                            thumb.source = thumb.origin
-                                            state = ""
-                                        }
+                                        state = state ? "" : "restore"
                                     }
                                 }
                             }
@@ -621,19 +625,11 @@ Item {
                 }
 
                 Connections {
-                    target: popRoot
-                    onStateChanged: {
-                        if (state === "new") {
-                            tagCombo.currentIndex = 0
-                            pop.setLink("[]")
-                        } else if (state === "edit") {
-                            popNameInput.placeholderText = popName.text
-                            popInfoInput.placeholderText = popInfo.text
-                            for (var i = 0; i < tagModel.count; i++) {
-                                if (tagModel.get(i)["name"] === tagCombo.tag) {
-                                    tagCombo.currentIndex = i
-                                }
-                            }
+                    target: screenshot
+                    onGrabbed: {
+                        if (thumbBtn.state === "restore") {
+                            thumb.source = "image://screenshot/."
+                            thumb.source = "image://screenshot/"
                         }
                     }
                 }

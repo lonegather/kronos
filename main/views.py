@@ -54,5 +54,8 @@ def api(request):
             return HttpResponse(json.dumps(query_list[table](request.GET['list'])))
 
     elif request.method == 'POST':
-        models.Entity.set(dict(request.POST))
+        form = dict(request.POST)
+        if request.FILES:
+            form['thumb'] = request.FILES['thumb']
+        models.Entity.set(form)
         return HttpResponse("")
