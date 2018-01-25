@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import platform
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +32,7 @@ MEDIA_URL = '/media/'
 SECRET_KEY = '^(6#g5y02nv=!jrd1)#ov2h77*-=1t^&0lkihr5jf_7dy)0h#i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = platform.system() == 'Windows'
 
 ALLOWED_HOSTS = ['*']
 
