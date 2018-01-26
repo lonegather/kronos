@@ -1,15 +1,14 @@
 ﻿# -*- coding: utf-8 -*-
-import os
 import json
 import requests
 from requests.exceptions import ConnectionError
 
-host = "http://localhost:8000"
-# host = "http://10.1.21.252:8880"
+host = "localhost:8000"
+# host = "10.1.21.252:8880"
 
 
 def request(table, **filters):
-    server = "%s/api" % host
+    server = "http://%s/api" % host
     url = "{server}/{table}?".format(**locals())
     for field in filters:
         url += '%s=%s&' % (field, filters[field])
@@ -21,7 +20,7 @@ def request(table, **filters):
 
 
 def commit(table, **fields):
-    server = "%s/api" % host
+    server = "http://%s/api" % host
     url = "{server}/{table}".format(**locals())
     kwargs = {'data': {}}
     for field in fields:

@@ -2,6 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.0
 import QtGraphicalEffects 1.0
+import QtWebSockets 1.0
 
 ApplicationWindow {
     id: root
@@ -17,6 +18,18 @@ ApplicationWindow {
 
     header: Header {
         id: header
+    }
+
+    WebSocket {
+        id: socket
+        active: true
+        url: "ws://echo.websocket.org"
+        onTextMessageReceived: {
+            console.log(message)
+        }
+        onStatusChanged: {
+            console.log(socket.status)
+        }
     }
 
     MouseArea {
@@ -73,6 +86,7 @@ ApplicationWindow {
             font.weight: Font.Bold
             font.family: qsTr("微软雅黑")
             onClicked: {
+                socket.sendTextMessage("task")
                 swipeView.currentIndex = 0
                 asset.pop.close()
             }

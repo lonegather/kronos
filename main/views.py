@@ -31,31 +31,36 @@ def auth(request):
 def api(request):
     table = request.path.split('/')[-1]
     if request.method == 'GET':
-        if table == "preset":
-            preset = {"project": models.Project.all(),
-                      "stage": models.Stage.get(),
-                      "tag": models.Tag.get(),
-                      "batch": models.Entity.get(genus='batch')
-                      }
-            return HttpResponse(json.dumps(preset))
-
-        query_dict = {'project': models.Project.all,
-                      'entity': models.Entity.get,
-                      'stage': models.Stage.get,
-                      }
-        query_list = {'entity_id': models.Entity.get_by_id,
-                      }
-        if table in query_dict:
-            flt = {}
-            for key in request.GET:
-                flt[key] = request.GET[key]
-            return HttpResponse(json.dumps(query_dict[table](**flt)))
-        elif table in query_list:
-            return HttpResponse(json.dumps(query_list[table](request.GET['list'])))
-
+        return api_get(request, table)
     elif request.method == 'POST':
-        form = dict(request.POST)
-        if request.FILES:
-            form['thumb'] = request.FILES['thumb']
-        models.Entity.set(form)
-        return HttpResponse("")
+        return api_set(request, table)
+
+
+def api_get(request, table):
+    flt = {}
+    query_dict = {
+        'preset': lambda **__: {
+            "project": models.Project.all(),
+            "stage": models.Stage.get(),
+            "tag": models.Tag.get(),
+            "batch": models.Entity.get(genus='batch'),
+        },
+        'project': models.Project.all,
+        'entity': models.Entity.get,
+        'stage': models.Stage.get,
+    }
+    for key in request.GET:
+        flt[key] = request.GET[key]
+    return HttpResponse(json.dumps(query_dict[table](**flt)))
+
+
+def api_set(request, table):
+    form = dict(request.POST)
+    modify_dict = {
+        'entity': models.Entity.set
+    }
+    if request.FILES:
+        for f in request.FILES:
+            form[f] = request.FILES[f]
+    modify_dict[table](form)
+    return HttpResponse("")
