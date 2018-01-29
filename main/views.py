@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import json
+from channels import Group
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
@@ -18,14 +19,16 @@ def front(request, url):
 
 
 def auth(request):
+    response = {}
     username = request.POST['username']
     password = request.POST['password']
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return HttpResponse("success")
-    else:
-        pass
+        response['session'] = request.session.session_key
+        response['username'] = user.username
+
+    return HttpResponse(json.dumps(response))
 
 
 def api(request):
@@ -57,10 +60,11 @@ def api_get(request, table):
 def api_set(request, table):
     form = dict(request.POST)
     modify_dict = {
-        'entity': models.Entity.set
+        'entity': models.Entity.set,
     }
     if request.FILES:
         for f in request.FILES:
             form[f] = request.FILES[f]
     modify_dict[table](form)
+    Group('global').send({'text': '%s changed' % form['name']})
     return HttpResponse("")

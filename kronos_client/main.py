@@ -18,6 +18,7 @@ if __name__ == "__main__":
     prs = preset.Preset(engine)
     ent = entity.EntityModel(engine)
     scn = utils.ScreenShot(engine)
+    usr = utils.Auth(engine)
 
     engine.load("qml/main.qml")
     engine.quit.connect(app.quit)

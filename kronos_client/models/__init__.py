@@ -6,6 +6,8 @@ from requests.exceptions import ConnectionError
 host = "localhost:8000"
 # host = "10.1.21.252:8880"
 
+session = requests.Session()
+
 
 def request(table, **filters):
     server = "http://%s/api" % host
@@ -30,7 +32,20 @@ def commit(table, **fields):
             kwargs['data'][field] = fields[field]
 
     try:
-        requests.post(url, **kwargs)
+        session.post(url, **kwargs)
         return True
     except ConnectionError:
         return False
+
+
+def login(username, password):
+    server = "http://%s/auth/" % host
+    kwargs = {
+        'username': username,
+        'password': password,
+    }
+    try:
+        response = session.post(server, data=kwargs)
+        return str(response.text)
+    except ConnectionError:
+        return ""

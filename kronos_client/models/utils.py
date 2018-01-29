@@ -1,8 +1,64 @@
 ﻿# -*- coding: utf-8 -*-
 import os
-from PyQt5.QtCore import QSize, QObject, pyqtSignal, pyqtSlot
+import json
+from PyQt5.QtCore import QSize, QObject, pyqtSignal, pyqtSlot, QThread
 from PyQt5.QtGui import QGuiApplication, QImage
 from PyQt5.QtQuick import QQuickImageProvider
+from . import login
+
+
+class Auth(QObject):
+
+    granted = pyqtSignal()
+    denied = pyqtSignal()
+
+    def __init__(self, engine):
+        super(Auth, self).__init__()
+        self.thread = None
+        self.session = ""
+        self.name = ""
+
+        engine.rootContext().setContextProperty("auth", self)
+
+    @pyqtSlot(str, str)
+    def login(self, username, password):
+        self.thread = AuthThread(username, password)
+        self.thread.accepted.connect(self.on_accepted)
+        self.thread.start()
+
+    @pyqtSlot(result=str)
+    def session(self):
+        return self.session
+
+    @pyqtSlot(result=str)
+    def name(self):
+        return self.name
+
+    @pyqtSlot(result=str)
+    def level(self):
+        pass
+
+    def on_accepted(self, response):
+        response = json.loads(response)
+        if response:
+            self.session = response['session']
+            self.name = response['username']
+            self.granted.emit()
+        else:
+            self.denied.emit()
+
+
+class AuthThread(QThread):
+
+    accepted = pyqtSignal(str)
+
+    def __init__(self, username, password):
+        super(AuthThread, self).__init__()
+        self.username = username
+        self.password = password
+
+    def run(self):
+        self.accepted.emit(login(self.username, self.password))
 
 
 class ScreenShot(QObject):

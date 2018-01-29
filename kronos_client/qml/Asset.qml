@@ -246,7 +246,7 @@ Item {
                                         gridView.concurrent -= 1
                                     }
                                     img.source = ""
-                                    img.source = preset.host() + thumb
+                                    img.source = "http://" + preset.host() + thumb
                                 }
                                 timer.restart()
                             }
@@ -318,7 +318,7 @@ Item {
                         assetInfo.pop.setInfo(info)
                         assetInfo.pop.setPath(path)
                         assetInfo.pop.setLink(link)
-                        assetInfo.pop.setThumb(preset.host() + thumb)
+                        assetInfo.pop.setThumb("http://" + preset.host() + thumb)
                         assetInfo.pop.open()
                     }
                 }

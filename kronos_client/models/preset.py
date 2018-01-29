@@ -18,7 +18,7 @@ class Preset(QObject):
 
     @pyqtSlot(result=str)
     def host(self):
-        return "http://%s" % host
+        return host
 
     @pyqtSlot(str, result=str)
     def data(self, table):

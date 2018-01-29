@@ -29,6 +29,10 @@ Rectangle {
         title: qsTr("登录")
         standardButtons: Dialog.Ok | Dialog.Cancel
 
+        onAccepted: {
+            auth.login(textUsername.text, textPassword.text)
+        }
+
         ColumnLayout {
             spacing: 20
             anchors.fill: parent
@@ -38,14 +42,26 @@ Rectangle {
                 Layout.fillWidth: true
             }
             TextField {
+                id: textUsername
                 focus: true
                 placeholderText: "Username"
                 Layout.fillWidth: true
             }
             TextField {
+                id: textPassword
                 placeholderText: "Password"
                 echoMode: TextField.PasswordEchoOnEdit
                 Layout.fillWidth: true
+            }
+        }
+
+        Connections {
+            target: auth
+            onGranted: {
+                var url = "ws://" + preset.host() + "/?session_key=" + auth.session()
+                console.log(url)
+                socket.url = url
+                socket.active = true
             }
         }
     }

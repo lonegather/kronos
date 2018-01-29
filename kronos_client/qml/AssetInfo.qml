@@ -124,8 +124,8 @@ Item {
             }
             PropertyChanges {
                 target: thumb
-                source: preset.host() + "/media/thumbs/default.png"
-                origin: preset.host() + "/media/thumbs/default.png"
+                source: "http://" + preset.host() + "/media/thumbs/default.png"
+                origin: "http://" + preset.host() + "/media/thumbs/default.png"
             }
         },
         State {

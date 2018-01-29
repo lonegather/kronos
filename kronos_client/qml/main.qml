@@ -22,8 +22,6 @@ ApplicationWindow {
 
     WebSocket {
         id: socket
-        active: true
-        url: "ws://echo.websocket.org"
         onTextMessageReceived: {
             console.log(message)
         }
@@ -86,7 +84,6 @@ ApplicationWindow {
             font.weight: Font.Bold
             font.family: qsTr("微软雅黑")
             onClicked: {
-                socket.sendTextMessage("task")
                 swipeView.currentIndex = 0
                 asset.pop.close()
             }
@@ -98,6 +95,7 @@ ApplicationWindow {
             font.weight: Font.Bold
             font.family: qsTr("微软雅黑")
             onClicked: {
+                socket.sendTextMessage("asset")
                 swipeView.currentIndex = 1
             }
         }
