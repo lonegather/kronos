@@ -62,6 +62,9 @@ Rectangle {
                 console.log(url)
                 socket.url = url
                 socket.active = true
+                userInfo.text = qsTr("欢迎，" + auth.name())
+                loginBtn.visible = false
+                logoutBtn.visible = true
             }
         }
     }
@@ -135,6 +138,18 @@ Rectangle {
             }
         }
 
+        Text {
+            id: userInfo
+            rightPadding: 10
+            color: "darkgray"
+            font.family: qsTr("微软雅黑")
+            font.weight: Font.Bold
+            font.pixelSize: 17
+            Layout.fillHeight: true
+            horizontalAlignment: Text.AlignRight
+            verticalAlignment: Text.AlignVCenter
+        }
+
         ToolButton {
             id: loginBtn
             text: qsTr("登录")
@@ -143,6 +158,18 @@ Rectangle {
             font.family: qsTr("微软雅黑")
             onClicked: {
                 inputDialog.open()
+            }
+        }
+
+        ToolButton {
+            id: logoutBtn
+            visible: false
+            text: qsTr("注销")
+            font.weight: Font.Bold
+            font.pointSize: 12
+            font.family: qsTr("微软雅黑")
+            onClicked: {
+                //
             }
         }
 
