@@ -16,7 +16,7 @@ Item {
 
         Rectangle {
             id: filterBar
-            height: 40
+            height: 35
             visible: false
             width: parent.width
             color: "#33000000"
@@ -25,53 +25,80 @@ Item {
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 8
-                anchors.rightMargin: 8
+                anchors.leftMargin: 5
+                anchors.rightMargin: 5
+                spacing: 0
 
-                ToolButton {
+                Rectangle {
                     id: addBtn
                     visible: false
+                    color: "#00000000"
                     Layout.fillHeight: true
-                    width: height
-                    onClicked: {
-                        assetInfo.state = "new"
-                        assetInfo.x = (gridView.width - assetInfo.popWidth) / 2
-                        assetInfo.y = (gridView.height - assetInfo.popHeight) / 2
-                        assetInfo.pop.open()
-                    }
-
-                    Image {
+                    width: filterBar.height
+                    Button {
+                        flat: true
                         anchors.fill: parent
-                        source: "add.png"
+                        onClicked: {
+                            assetInfo.state = "new"
+                            assetInfo.x = (gridView.width - assetInfo.popWidth) / 2
+                            assetInfo.y = (gridView.height - assetInfo.popHeight) / 2
+                            assetInfo.pop.open()
+                        }
+
+                        Image {
+                            anchors.fill: parent
+                            source: "add.png"
+                        }
                     }
                 }
 
-                ToolButton {
+                Rectangle {
                     id: delBtn
                     visible: false
+                    color: "#00000000"
                     Layout.fillHeight: true
-                    width: height
-                    onClicked: {
-
-                    }
-                    Image {
+                    width: filterBar.height
+                    Button {
+                        flat: true
                         anchors.fill: parent
-                        source: "del.png"
+                        onClicked: {
+
+                        }
+                        Image {
+                            anchors.fill: parent
+                            source: "del.png"
+                        }
                     }
                 }
 
-                ToolButton {
+                Rectangle {
                     id: impBtn
                     visible: false
+                    color: "#00000000"
                     Layout.fillHeight: true
-                    width: height
+                    width: filterBar.height
+                    Button {
+                        flat: true
+                        anchors.fill: parent
+                        onClicked: {
+
+                        }
+                    }
                 }
 
-                ToolButton {
+                Rectangle {
                     id: synBtn
                     visible: false
+                    color: "#00000000"
                     Layout.fillHeight: true
-                    width: height
+                    width: filterBar.height
+                    Button {
+                        flat: true
+                        anchors.fill: parent
+                        onClicked: {
+
+                        }
+                    }
                 }
 
                 ListView {

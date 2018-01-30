@@ -13,7 +13,7 @@ ApplicationWindow {
            | Qt.WindowMinimizeButtonHint
     title: qsTr("资产库")
     Material.theme: Material.Dark
-    Material.accent: Material.BlueGrey
+    Material.accent: Material.DeepPurple
     Material.foreground: Material.Grey
 
     header: Header {
