@@ -23,18 +23,16 @@ Item {
 
             signal filterChanged
 
-            Row {
+            RowLayout {
                 anchors.fill: parent
-
-                ToolSeparator {
-                    height: parent.height
-                }
+                anchors.leftMargin: 8
+                anchors.rightMargin: 8
 
                 ToolButton {
                     id: addBtn
-                    width: parent.height
-                    height: parent.height
-
+                    visible: false
+                    Layout.fillHeight: true
+                    width: height
                     onClicked: {
                         assetInfo.state = "new"
                         assetInfo.x = (gridView.width - assetInfo.popWidth) / 2
@@ -50,8 +48,9 @@ Item {
 
                 ToolButton {
                     id: delBtn
-                    width: parent.height
-                    height: parent.height
+                    visible: false
+                    Layout.fillHeight: true
+                    width: height
                     onClicked: {
 
                     }
@@ -63,27 +62,23 @@ Item {
 
                 ToolButton {
                     id: impBtn
-                    width: parent.height
-                    height: parent.height
+                    visible: false
+                    Layout.fillHeight: true
+                    width: height
                 }
 
                 ToolButton {
                     id: synBtn
-                    width: parent.height
-                    height: parent.height
-                }
-
-                ToolSeparator {
-                    id: sep
-                    height: parent.height
+                    visible: false
+                    Layout.fillHeight: true
+                    width: height
                 }
 
                 ListView {
                     id: filterView
                     spacing: 10
-                    width: parent.width - filterRec.width - addBtn.width - delBtn.width
-                           - impBtn.width - synBtn.width - sep.width * 3
-                    height: parent.height
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
                     orientation: ListView.Horizontal
                     layoutDirection: Qt.RightToLeft
                     delegate: Item {
@@ -108,33 +103,23 @@ Item {
                     }
                 }
 
-                Rectangle {
-                    id: filterRec
-                    width: 100
-                    height: parent.height
-                    color: "#00000000"
-                    ComboBox {
-                        id: filterLink
-                        font.family: qsTr("微软雅黑")
-                        anchors.fill: parent
-                        onActivated: {
-                            gridView.model = []
-                            var presetBatch = JSON.parse(preset.data("batch"))
-                            var batch = []
-                            for (var i in presetBatch) {
-                                if (presetBatch[i]["project"] === header.currentProject) {
-                                    batch.push(presetBatch[i])
-                                }
+                ComboBox {
+                    id: filterLink
+                    font.family: qsTr("微软雅黑")
+                    Layout.fillHeight: true
+                    onActivated: {
+                        gridView.model = []
+                        var presetBatch = JSON.parse(preset.data("batch"))
+                        var batch = []
+                        for (var i in presetBatch) {
+                            if (presetBatch[i]["project"] === header.currentProject) {
+                                batch.push(presetBatch[i])
                             }
-
-                            entityModel.set_link(currentText,
-                                                 JSON.stringify(batch))
                         }
-                    }
-                }
 
-                ToolSeparator {
-                    height: parent.height
+                        entityModel.set_link(currentText,
+                                             JSON.stringify(batch))
+                    }
                 }
 
                 Connections {
@@ -150,6 +135,23 @@ Item {
 
                         filterView.model = entityModel.filters()
                         filterLink.model = batchList
+                    }
+                }
+
+                Connections {
+                    target: auth
+                    onGranted: {
+                        addBtn.visible = true
+                        delBtn.visible = true
+                        impBtn.visible = true
+                        synBtn.visible = true
+                    }
+                    onExited: {
+                        addBtn.visible = false
+                        delBtn.visible = false
+                        impBtn.visible = false
+                        synBtn.visible = false
+                        assetInfo.pop.close()
                     }
                 }
             }
@@ -238,7 +240,7 @@ Item {
 
                         Timer {
                             id: timer
-                            interval: 1000
+                            interval: 100
                             triggeredOnStart: true
                             onTriggered: {
                                 if (gridView.concurrent > 0) {
@@ -353,7 +355,7 @@ Item {
         onDataChanged: {
             busy.visible = false
             filterBar.visible = true
-            gridView.concurrent = 10
+            gridView.concurrent = 1
             gridView.model = entityModel
             acquired()
         }

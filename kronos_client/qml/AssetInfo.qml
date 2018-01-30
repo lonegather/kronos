@@ -35,7 +35,7 @@ Item {
             }
             PropertyChanges {
                 target: edit
-                visible: true
+                visible: auth.session() !== ""
             }
             PropertyChanges {
                 target: exit
@@ -343,7 +343,6 @@ Item {
                         color: "#00000000"
                         width: parent.width
                         height: width
-                        visible: true
                         ToolButton {
                             id: exitBtn
                             anchors.fill: parent
@@ -361,7 +360,7 @@ Item {
                         color: "#00000000"
                         width: parent.width
                         height: width
-                        visible: true
+                        visible: false
                         ToolButton {
                             id: editBtn
                             anchors.fill: parent
@@ -633,6 +632,19 @@ Item {
                         }
                     }
                 }
+            }
+        }
+    }
+    Connections {
+        target: auth
+        onGranted: {
+            if (parent.state === "") {
+                edit.visible = auth.session() !== ""
+            }
+        }
+        onExited: {
+            if (parent.state === "") {
+                edit.visible = auth.session() !== ""
             }
         }
     }

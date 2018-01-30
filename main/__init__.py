@@ -4,16 +4,38 @@
 def reset_data():
     from . import models
     
-    tables = [models.Project, models.Edition, models.Genus, models.Tag, 
-              models.Entity, models.Stage, models.Status, models.Task]
+    tables = [
+        models.Department, models.Role,
+        models.Project, models.Edition, models.Genus, models.Tag,
+        models.Entity, models.Stage, models.Status, models.Task
+    ]
     
     for table in tables:
         for data in table.objects.all():
             data.delete()
+
+    #Department
+    for data in [
+        {'name':'global',    'info':u'统筹'},
+        {'name':'design',    'info':u'原画'},
+        {'name':'modeling',  'info':u'模型'},
+        {'name':'rigging',   'info':u'绑定'},
+        {'name':'animation', 'info':u'动画'},
+        {'name':'rendering', 'info':u'渲染'},
+    ]: models.Department(**data).save()
+
+    #Role
+    for data in [
+        {'name':'staff', 'info':u'制作人员'},
+        {'name':'supervisor', 'info':u'组长'},
+        {'name':'producer', 'info':u'制片'},
+        {'name':'director', 'info':u'导演'},
+        {'name':'administrator', 'info':u'管理员'},
+    ]: models.Role(**data).save()
     
     #Project
     for data in [
-        {'name':'|'                                                          },
+        {'name':'|'                                                            },
         {'name':'PT | S02', 'info':u'哈喽葡星人 第二季', 'url':'file:///P:/PT/S02'},
         {'name':'MB | S01', 'info':u'百变布鲁可 第一季', 'url':'file:///P:/MB/S01'},
     ]: models.Project(**data).save()
@@ -28,7 +50,7 @@ def reset_data():
     for data in [
         {'name':'asset', 'info':u'资产', 'url':'assets'},
         {'name':'shot',  'info':u'镜头', 'url':'shots' },
-        {'name':'batch', 'info':u'批次', 'url':''       },
+        {'name':'batch', 'info':u'批次', 'url':''      },
     ]: models.Genus(**data).save()
     
     #Tag
@@ -36,8 +58,8 @@ def reset_data():
     gns_batch = models.Genus.objects.get(name='batch')
     gns_asset = models.Genus.objects.get(name='asset')
     for data in [
-        {'project':prj_all, 'genus':gns_batch, 'name':'scene',   'info':u'场次', 'url':''      },
-        {'project':prj_all, 'genus':gns_batch, 'name':'episode', 'info':u'集数', 'url':''      },
+        {'project':prj_all, 'genus':gns_batch, 'name':'scene',   'info':u'场次', 'url':''     },
+        {'project':prj_all, 'genus':gns_batch, 'name':'episode', 'info':u'集数', 'url':''     },
         {'project':prj_all, 'genus':gns_asset, 'name':'CH',      'info':u'角色', 'url':'char' },
         {'project':prj_all, 'genus':gns_asset, 'name':'PR',      'info':u'道具', 'url':'prop' },
         {'project':prj_all, 'genus':gns_asset, 'name':'SC',      'info':u'场景', 'url':'scene'},

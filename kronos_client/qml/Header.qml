@@ -44,14 +44,19 @@ Rectangle {
             TextField {
                 id: textUsername
                 focus: true
-                placeholderText: "Username"
+                placeholderText: qsTr("用户名")
                 Layout.fillWidth: true
             }
             TextField {
                 id: textPassword
-                placeholderText: "Password"
-                echoMode: TextField.PasswordEchoOnEdit
+                placeholderText: qsTr("密码")
+                echoMode: TextField.Password
                 Layout.fillWidth: true
+                onAccepted: {
+                    if(textUsername.text){
+                        inputDialog.accept()
+                    }
+                }
             }
         }
 
@@ -59,12 +64,17 @@ Rectangle {
             target: auth
             onGranted: {
                 var url = "ws://" + preset.host() + "/?session_key=" + auth.session()
-                console.log(url)
                 socket.url = url
                 socket.active = true
                 userInfo.text = qsTr("欢迎，" + auth.name())
                 loginBtn.visible = false
                 logoutBtn.visible = true
+            }
+            onExited: {
+                socket.active = false
+                userInfo.text = ""
+                loginBtn.visible = true
+                logoutBtn.visible = false
             }
         }
     }
@@ -169,7 +179,7 @@ Rectangle {
             font.pointSize: 12
             font.family: qsTr("微软雅黑")
             onClicked: {
-                //
+                auth.logout()
             }
         }
 

@@ -5,7 +5,41 @@ import json
 import uuid
 
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
+
+
+@python_2_unicode_compatible
+class Department(models.Model):
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=50, default='company')
+    info = models.CharField(max_length=50, default='company')
+
+    def __str__(self):
+        return self.name
+
+
+@python_2_unicode_compatible
+class Role(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=50, default='artist')
+    info = models.CharField(max_length=50, default='artist')
+
+    def __str__(self):
+        return self.name
+
+
+class Profile(models.Model):
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, default='artist')
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return 'User Information'
 
 
 @python_2_unicode_compatible

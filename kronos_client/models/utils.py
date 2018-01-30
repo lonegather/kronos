@@ -11,12 +11,13 @@ class Auth(QObject):
 
     granted = pyqtSignal()
     denied = pyqtSignal()
+    exited = pyqtSignal()
 
     def __init__(self, engine):
         super(Auth, self).__init__()
         self.thread = None
-        self.session = ""
-        self.name = ""
+        self.session = ''
+        self.name = ''
 
         engine.rootContext().setContextProperty("auth", self)
 
@@ -25,6 +26,13 @@ class Auth(QObject):
         self.thread = AuthThread(username, password)
         self.thread.accepted.connect(self.on_accepted)
         self.thread.start()
+
+    @pyqtSlot()
+    def logout(self):
+        self.thread = None
+        self.session = ''
+        self.name = ''
+        self.exited.emit()
 
     @pyqtSlot(result=str)
     def session(self):
