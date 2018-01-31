@@ -18,6 +18,9 @@ class Auth(QObject):
         self.thread = None
         self.session = ''
         self.name = ''
+        self.info = ''
+        self.role = ''
+        self.department = ''
 
         engine.rootContext().setContextProperty("auth", self)
 
@@ -32,6 +35,9 @@ class Auth(QObject):
         self.thread = None
         self.session = ''
         self.name = ''
+        self.info = ''
+        self.role = ''
+        self.department = ''
         self.exited.emit()
 
     @pyqtSlot(result=str)
@@ -43,6 +49,18 @@ class Auth(QObject):
         return self.name
 
     @pyqtSlot(result=str)
+    def info(self):
+        return self.info
+
+    @pyqtSlot(result=str)
+    def role(self):
+        return self.role
+
+    @pyqtSlot(result=str)
+    def department(self):
+        return self.department
+
+    @pyqtSlot(result=str)
     def level(self):
         pass
 
@@ -50,7 +68,10 @@ class Auth(QObject):
         response = json.loads(response)
         if response:
             self.session = response['session']
-            self.name = response['username']
+            self.name = response['name']
+            self.info = response['info']
+            self.role = response['role']
+            self.department = response['department']
             self.granted.emit()
         else:
             self.denied.emit()

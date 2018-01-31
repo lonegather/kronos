@@ -35,7 +35,7 @@ Item {
             }
             PropertyChanges {
                 target: edit
-                visible: auth.session() !== ""
+                visible: auth.role() === "administrator" || auth.role() === "producer"
             }
             PropertyChanges {
                 target: exit
@@ -184,7 +184,7 @@ Item {
         modal: false
         focus: true
         onClosed: {
-
+            parent.state = ""
         }
 
         property string identity: ""
@@ -639,12 +639,13 @@ Item {
         target: auth
         onGranted: {
             if (parent.state === "") {
-                edit.visible = auth.session() !== ""
+                console.log("adasdfasdf")
+                edit.visible = auth.role() === "administrator" || auth.role() === "producer"
             }
         }
         onExited: {
             if (parent.state === "") {
-                edit.visible = auth.session() !== ""
+                edit.visible = auth.role() === "administrator" || auth.role() === "producer"
             }
         }
     }

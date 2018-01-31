@@ -17,9 +17,13 @@ Item {
         Rectangle {
             id: filterBar
             height: 35
-            visible: false
             width: parent.width
-            color: "#33000000"
+            //color: "#33000000"
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "#33000000" }
+                GradientStop { position: 0.9; color: "#10000000" }
+                GradientStop { position: 1.0; color: "#335a555c" }
+            }
 
             signal filterChanged
 
@@ -162,16 +166,21 @@ Item {
 
                         filterView.model = entityModel.filters()
                         filterLink.model = batchList
+                        filterLink.enabled = true
                     }
                 }
 
                 Connections {
                     target: auth
                     onGranted: {
-                        addBtn.visible = true
-                        delBtn.visible = true
-                        impBtn.visible = true
-                        synBtn.visible = true
+                        var role = auth.role()
+                        console.log(role)
+                        if (role === "administrator" || role === "producer") {
+                            addBtn.visible = true
+                            delBtn.visible = true
+                            impBtn.visible = true
+                            synBtn.visible = true
+                        }
                     }
                     onExited: {
                         addBtn.visible = false
@@ -206,7 +215,7 @@ Item {
                         name: "selected"
                         PropertyChanges {
                             target: shader
-                            color: "#555a5c"
+                            color: "#b399db"
                         }
                     },
                     State {
@@ -303,7 +312,7 @@ Item {
                         id: label
                         text: info == "" ? name : info
                         elide: Text.ElideRight
-                        color: wrapper.GridView.isCurrentItem ? "#b0bec5" : "darkgray"
+                        color: wrapper.GridView.isCurrentItem ? "#ffffff" : "darkgrey"
                         font.family: qsTr("微软雅黑")
                         font.pixelSize: 14
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -368,8 +377,9 @@ Item {
         target: header
         onProjectChanged: {
             busy.visible = true
-            filterBar.visible = false
-            filterLink.currentIndex = 0
+            filterView.model = []
+            filterLink.model = []
+            filterLink.enabled = false
             gridView.model = []
             assetInfo.pop.close()
             entityModel.update(
@@ -381,7 +391,7 @@ Item {
         target: entityModel
         onDataChanged: {
             busy.visible = false
-            filterBar.visible = true
+            //filterBar.visible = true
             gridView.concurrent = 1
             gridView.model = entityModel
             acquired()

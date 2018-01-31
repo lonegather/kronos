@@ -26,7 +26,10 @@ def auth(request):
     if user is not None:
         login(request, user)
         response['session'] = request.session.session_key
-        response['username'] = user.username
+        response['name'] = user.username
+        response['info'] = user.profile.name
+        response['role'] = user.profile.role.name
+        response['department'] = user.profile.department.name
 
     return HttpResponse(json.dumps(response))
 

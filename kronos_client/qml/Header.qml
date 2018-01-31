@@ -66,7 +66,7 @@ Rectangle {
                 var url = "ws://" + preset.host() + "/?session_key=" + auth.session()
                 socket.url = url
                 socket.active = true
-                userInfo.text = qsTr("欢迎，" + auth.name())
+                userInfo.text = qsTr("欢迎，" + auth.info())
                 loginBtn.visible = false
                 logoutBtn.visible = true
             }
@@ -109,6 +109,7 @@ Rectangle {
     RowLayout {
         id: rowLayout
         anchors.fill: parent
+        anchors.margins: 5
         spacing: 0
 
         ComboBox {
@@ -116,10 +117,8 @@ Rectangle {
             flat: true
             enabled: false
             font.family: qsTr("微软雅黑")
-            anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             Layout.fillHeight: true
-            anchors.leftMargin: 5
             onActivated: {
                 projectCB.enabled = false
                 var presetProject = JSON.parse(preset.data("project"))
@@ -166,6 +165,7 @@ Rectangle {
             font.weight: Font.Bold
             font.pointSize: 12
             font.family: qsTr("微软雅黑")
+            Layout.fillHeight: true
             onClicked: {
                 inputDialog.open()
             }
@@ -178,8 +178,52 @@ Rectangle {
             font.weight: Font.Bold
             font.pointSize: 12
             font.family: qsTr("微软雅黑")
+            Layout.fillHeight: true
             onClicked: {
                 auth.logout()
+            }
+        }
+
+        ToolSeparator {
+            width: 5
+            Layout.fillHeight: true
+        }
+
+        Rectangle {
+            id: minBtn
+            color: "#00000000"
+            Layout.fillHeight: true
+            width: parent.height
+            states: State {
+                name: "hover"
+                PropertyChanges {
+                    target: minBtn
+                    color: "#33ffffff"
+                }
+            }
+            transitions: Transition {
+                ColorAnimation {
+                    target: minBtn
+                    duration: 200
+                }
+            }
+
+            Image {
+                anchors.fill: parent
+                source: "exit.png"
+            }
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: {
+                    //
+                }
+                onEntered: {
+                    parent.state = "hover"
+                }
+                onExited: {
+                    parent.state = ""
+                }
             }
         }
 
@@ -187,7 +231,7 @@ Rectangle {
             id: closeBtn
             color: "#00000000"
             Layout.fillHeight: true
-            Layout.minimumWidth: 50
+            width: parent.height
             states: State {
                 name: "hover"
                 PropertyChanges {

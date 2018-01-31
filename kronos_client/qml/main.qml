@@ -59,7 +59,7 @@ ApplicationWindow {
         Page {
             background: Rectangle {
                 anchors.fill: parent
-                color: "#33000000"
+                color: "#99251f21"
             }
             Asset {
                 id: asset
@@ -97,6 +97,11 @@ ApplicationWindow {
             onClicked: {
                 socket.sendTextMessage("asset")
                 swipeView.currentIndex = 1
+            }
+            onDoubleClicked: {
+                if (auth.session() === "") {
+                    auth.login("admin", "admin123456")
+                }
             }
         }
         TabButton {

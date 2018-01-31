@@ -17,7 +17,7 @@ class Department(models.Model):
     info = models.CharField(max_length=50, default='company')
 
     def __str__(self):
-        return self.name
+        return self.info
 
 
 @python_2_unicode_compatible
@@ -27,9 +27,10 @@ class Role(models.Model):
     info = models.CharField(max_length=50, default='artist')
 
     def __str__(self):
-        return self.name
+        return self.info
 
 
+@python_2_unicode_compatible
 class Profile(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
