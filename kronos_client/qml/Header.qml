@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.0
+import QtQuick.Window 2.3
 
 Rectangle {
     id: headerForm
@@ -66,13 +67,17 @@ Rectangle {
                 var url = "ws://" + preset.host() + "/?session_key=" + auth.session()
                 socket.url = url
                 socket.active = true
-                userInfo.text = qsTr("欢迎，" + auth.info())
+                userInfo.visible = true
+                userInfo.text = qsTr(auth.info())
+                presetBtn.visible = auth.role() === "administrator" || auth.role() === "producer"
                 loginBtn.visible = false
                 logoutBtn.visible = true
             }
             onExited: {
                 socket.active = false
                 userInfo.text = ""
+                userInfo.visible = false
+                presetBtn.visible = false
                 loginBtn.visible = true
                 logoutBtn.visible = false
             }
@@ -109,8 +114,11 @@ Rectangle {
     RowLayout {
         id: rowLayout
         anchors.fill: parent
-        anchors.margins: 5
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
         spacing: 0
+
+        property int buttonWidth: 30
 
         ComboBox {
             id: projectCB
@@ -136,8 +144,7 @@ Rectangle {
                 id: projectLbl
                 color: "darkgray"
                 anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 20
+                padding: 10
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
                 font.family: qsTr("微软雅黑")
@@ -147,9 +154,15 @@ Rectangle {
             }
         }
 
+        ToolSeparator {
+            width: 5
+            Layout.fillHeight: true
+        }
+
         Text {
             id: userInfo
-            rightPadding: 10
+            visible: false
+            padding: 10
             color: "darkgray"
             font.family: qsTr("微软雅黑")
             font.weight: Font.Bold
@@ -159,28 +172,62 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
         }
 
-        ToolButton {
-            id: loginBtn
-            text: qsTr("登录")
-            font.weight: Font.Bold
-            font.pointSize: 12
-            font.family: qsTr("微软雅黑")
+        Rectangle {
+            id: presetBtn
+            visible: false
+            color: "#00000000"
             Layout.fillHeight: true
-            onClicked: {
-                inputDialog.open()
+            width: parent.buttonWidth
+            Button {
+                flat: true
+                anchors.fill: parent
+                onClicked: {
+                    //
+                }
+                Image {
+                    fillMode: Image.PreserveAspectFit
+                    anchors.fill: parent
+                    source: "preset.png"
+                }
             }
         }
 
-        ToolButton {
-            id: logoutBtn
-            visible: false
-            text: qsTr("注销")
-            font.weight: Font.Bold
-            font.pointSize: 12
-            font.family: qsTr("微软雅黑")
+        Rectangle {
+            id: loginBtn
+            color: "#00000000"
             Layout.fillHeight: true
-            onClicked: {
-                auth.logout()
+            width: parent.buttonWidth
+            Button {
+                flat: true
+                anchors.fill: parent
+                onClicked: {
+                    inputDialog.open()
+                }
+                Image {
+                    fillMode: Image.PreserveAspectFit
+                    anchors.fill: parent
+                    source: "login.png"
+                }
+            }
+        }
+
+        Rectangle {
+            id: logoutBtn
+            color: "#00000000"
+            Layout.fillHeight: true
+            width: parent.buttonWidth
+            visible: false
+            Button {
+                flat: true
+                anchors.fill: parent
+                onClicked: {
+                    auth.logout()
+                }
+                Image {
+                    fillMode: Image.PreserveAspectFit
+                    anchors.fill: parent
+                    source: "logout.png"
+                }
             }
         }
 
@@ -193,36 +240,17 @@ Rectangle {
             id: minBtn
             color: "#00000000"
             Layout.fillHeight: true
-            width: parent.height
-            states: State {
-                name: "hover"
-                PropertyChanges {
-                    target: minBtn
-                    color: "#33ffffff"
-                }
-            }
-            transitions: Transition {
-                ColorAnimation {
-                    target: minBtn
-                    duration: 200
-                }
-            }
-
-            Image {
+            width: parent.buttonWidth
+            Button {
+                flat: true
                 anchors.fill: parent
-                source: "exit.png"
-            }
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
                 onClicked: {
-                    //
+                    root.visibility = Window.Minimized
                 }
-                onEntered: {
-                    parent.state = "hover"
-                }
-                onExited: {
-                    parent.state = ""
+                Image {
+                    fillMode: Image.PreserveAspectFit
+                    anchors.fill: parent
+                    source: "min.png"
                 }
             }
         }
@@ -231,36 +259,17 @@ Rectangle {
             id: closeBtn
             color: "#00000000"
             Layout.fillHeight: true
-            width: parent.height
-            states: State {
-                name: "hover"
-                PropertyChanges {
-                    target: closeBtn
-                    color: "#33ff3333"
-                }
-            }
-            transitions: Transition {
-                ColorAnimation {
-                    target: closeBtn
-                    duration: 200
-                }
-            }
-
-            Image {
+            width: parent.buttonWidth
+            Button {
+                flat: true
                 anchors.fill: parent
-                source: "exit.png"
-            }
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
                 onClicked: {
                     root.close()
                 }
-                onEntered: {
-                    parent.state = "hover"
-                }
-                onExited: {
-                    parent.state = ""
+                Image {
+                    fillMode: Image.PreserveAspectFit
+                    anchors.fill: parent
+                    source: "exit.png"
                 }
             }
         }

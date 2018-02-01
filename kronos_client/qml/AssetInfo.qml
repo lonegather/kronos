@@ -409,8 +409,9 @@ Item {
                                 }
 
                                 busy.visible = true
-                                filterBar.visible = false
+                                filterLink.enabled = false
                                 filterLink.currentIndex = 0
+                                filterView.model = []
                                 gridView.model = []
                                 pop.close()
                                 entityModel.set_asset(JSON.stringify(form))

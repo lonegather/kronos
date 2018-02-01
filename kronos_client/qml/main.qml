@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.0
 import QtGraphicalEffects 1.0
 import QtWebSockets 1.0
+import QtQuick.Window 2.3
 
 ApplicationWindow {
     id: root
@@ -41,6 +42,9 @@ ApplicationWindow {
             root.setX(root.x + delta.x)
             root.setY(root.y + delta.y)
         }
+        onDoubleClicked: {
+            root.visibility = root.visibility === Window.Maximized ? Window.Windowed : Window.Maximized
+        }
     }
 
     SwipeView {
@@ -72,6 +76,12 @@ ApplicationWindow {
                 color: "#33000000"
             }
         }
+    }
+
+    Preset {
+        y: -200
+        width: parent.width
+        height: 200
     }
 
     footer: TabBar {

@@ -16,7 +16,7 @@ Item {
 
         Rectangle {
             id: filterBar
-            height: 35
+            height: 40
             width: parent.width
             //color: "#33000000"
             gradient: Gradient {
@@ -108,16 +108,19 @@ Item {
                 ListView {
                     id: filterView
                     spacing: 10
+                    rightMargin: 10
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     orientation: ListView.Horizontal
                     layoutDirection: Qt.RightToLeft
                     delegate: Item {
                         id: filterItem
+                        width: 50
                         height: parent.height
-                        width: 100
-                        CheckBox {
+                        Button {
+                            flat: true
                             checked: true
+                            checkable: true
                             anchors.fill: parent
                             text: modelData
                             font.pointSize: 12
