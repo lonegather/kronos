@@ -1,5 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.2
+import QtQuick.Layouts 1.3
 
 Item {
     id: popRoot
@@ -452,38 +453,36 @@ Item {
                 orientation: Qt.Vertical
                 interactive: false
                 clip: true
-                Rectangle {
-                    color: "#00000000"
-                    //anchors.topMargin: 5
-                    ListView {
-                        id: pathView
-                        clip: true
-                        spacing: 5
-                        anchors.fill: parent
-                        anchors.topMargin: 5
-                        model: pathModel
-                        flickableDirection: Flickable.AutoFlickIfNeeded
-                        delegate: Item {
-                            width: parent.width
-                            height: 50
-                            clip: true
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: 3
-                                color: "#33000000"
-                                Text {
-                                    anchors.fill: parent
-                                    text: pathName + ":" + pathValue
-                                    color: "darkgray"
-                                    font.pixelSize: 12
-                                    font.family: qsTr("微软雅黑")
-                                }
+                RowLayout {
+                    Rectangle {
+                        color: "#00000000"
+                        width: 50
+                        Layout.fillHeight: true
+                        Tumbler {
+                            id: stage
+                            anchors.fill: parent
+                            model: pathModel
+                            delegate: stageDelegate
+                            visibleItemCount: 3
+                            wrap: false
+                        }
+                        Component {
+                            id: stageDelegate
+                            Label {
+                                text: pathName
+                                font.family: qsTr("微软雅黑")
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
                             }
                         }
                     }
+                    Rectangle {
+                        color: "#33000000"
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
                 }
                 Rectangle {
-                    radius: 3
                     color: "#00000000"
                     Column {
                         anchors.fill: parent
