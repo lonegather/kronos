@@ -32,7 +32,7 @@ Item {
             }
             PropertyChanges {
                 target: popDetail
-                currentIndex: 0
+                currentIndex: 1
             }
             PropertyChanges {
                 target: edit
@@ -81,7 +81,7 @@ Item {
             }
             PropertyChanges {
                 target: popDetail
-                currentIndex: 1
+                currentIndex: 0
             }
             PropertyChanges {
                 target: edit
@@ -137,7 +137,7 @@ Item {
             }
             PropertyChanges {
                 target: popDetail
-                currentIndex: 1
+                currentIndex: 0
             }
             PropertyChanges {
                 target: edit
@@ -217,6 +217,8 @@ Item {
                 }
             }
 
+            stage.history = stage.currentIndex
+            stage.model = []
             pathModel.clear()
             var pathDic = JSON.parse(path)
             for (i in pathDic) {
@@ -225,6 +227,8 @@ Item {
                                      pathValue: pathDic[i]
                                  })
             }
+            stage.model = pathModel
+            stage.currentIndex = stage.history
         }
 
         function setLink(str) {
@@ -452,36 +456,9 @@ Item {
                 height: popBrief.height - bio.height
                 orientation: Qt.Vertical
                 interactive: false
+                currentIndex: 1
                 clip: true
-                RowLayout {
-                    Rectangle {
-                        color: "#00000000"
-                        width: 50
-                        Layout.fillHeight: true
-                        Tumbler {
-                            id: stage
-                            anchors.fill: parent
-                            model: pathModel
-                            delegate: stageDelegate
-                            visibleItemCount: 3
-                            wrap: false
-                        }
-                        Component {
-                            id: stageDelegate
-                            Label {
-                                text: pathName
-                                font.family: qsTr("微软雅黑")
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                            }
-                        }
-                    }
-                    Rectangle {
-                        color: "#33000000"
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                    }
-                }
+
                 Rectangle {
                     color: "#00000000"
                     Column {
@@ -600,6 +577,69 @@ Item {
                                             linkExists = checked
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                ColumnLayout{
+                    Rectangle {
+                        color: "#00000000"
+                        Layout.fillWidth: true
+                        height: 5
+                    }
+                    RowLayout {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        Rectangle {
+                            color: "#33000000"
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Label {
+                                id: labelPath
+                            }
+                        }
+                        Rectangle {
+                            color: "#00000000"
+                            width: 50
+                            Layout.fillHeight: true
+                            Tumbler {
+                                id: stage
+                                anchors.fill: parent
+                                delegate: stageDelegate
+                                visibleItemCount: 5
+                                wrap: false
+                                property int history: 0
+                                onCurrentIndexChanged: {
+                                    if (count) {
+                                        labelPath.text = model.get(currentIndex).pathValue
+                                    }
+                                }
+
+                                Rectangle {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    y: parent.height * 0.4
+                                    width: parent.width
+                                    height: 1
+                                    color: "darkgray"
+                                }
+                                Rectangle {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    y: parent.height * 0.6
+                                    width: parent.width
+                                    height: 1
+                                    color: "darkgray"
+                                }
+                            }
+                            Component {
+                                id: stageDelegate
+                                Label {
+                                    text: pathName
+                                    font.family: qsTr("微软雅黑")
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    opacity: 1 - Math.abs(Tumbler.displacement) / 2.5
                                 }
                             }
                         }
